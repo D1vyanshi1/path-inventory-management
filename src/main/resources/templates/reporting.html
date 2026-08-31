@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <title>Reporting | PATH Asset Management</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet"
+          th:href="@{/app.css}">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+
+        .reporting-page {
+            width: min(1200px, 94%);
+            margin: 0 auto;
+            padding: 32px 0 50px;
+        }
+
+        .reporting-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 25px;
+        }
+
+        .reporting-header h1 {
+            margin: 0;
+            color: #17365d;
+            font-size: 30px;
+            font-weight: 700;
+        }
+
+        .reporting-header p {
+            margin: 7px 0 0;
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 42px;
+            padding: 0 17px;
+            border-radius: 8px;
+            text-decoration: none;
+            background: #f1f4f7;
+            color: #526274;
+            border: 1px solid #dfe7f0;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .back-button:hover {
+            background: #e7ecf1;
+            color: #526274;
+            text-decoration: none;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .summary-card {
+            background: white;
+            border: 1px solid #dfe7f0;
+            border-radius: 12px;
+            padding: 22px;
+            box-shadow: 0 3px 12px rgba(20, 50, 80, .06);
+        }
+
+        .summary-title {
+            color: #718096;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .summary-number {
+            color: #17365d;
+            font-size: 30px;
+            font-weight: 700;
+        }
+
+        .charts {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 20px;
+        }
+
+        .chart-card {
+            background: white;
+            border: 1px solid #dfe7f0;
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 3px 12px rgba(20, 50, 80, .06);
+        }
+
+        .chart-card h2 {
+            margin: 0 0 5px;
+            color: #17365d;
+            font-size: 18px;
+        }
+
+        .chart-card p {
+            margin: 0 0 20px;
+            color: #718096;
+            font-size: 13px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 350px;
+        }
+
+        @media (max-width: 900px) {
+
+            .charts {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .reporting-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+<main class="reporting-page">
+
+    <div class="reporting-header">
+
+        <div>
+
+            <h1>
+                Asset Reporting
+            </h1>
+
+            <p>
+                Overview of active and inactive assets by location
+            </p>
+
+        </div>
+
+        <a th:href="@{/devices}"
+           class="back-button">
+
+            ← Back to Devices
+
+        </a>
+
+    </div>
+
+
+    <!-- SUMMARY -->
+
+    <div class="summary-cards">
+
+        <div class="summary-card">
+
+            <div class="summary-title">
+                Active Assets
+            </div>
+
+            <div class="summary-number"
+                 th:text="${activeCount}">
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-title">
+                Inactive Assets
+            </div>
+
+            <div class="summary-number"
+                 th:text="${inactiveCount}">
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- CHARTS -->
+
+    <div class="charts">
+
+
+        <!-- PIE CHART -->
+
+        <div class="chart-card">
+
+            <h2>
+                Active vs Inactive
+            </h2>
+
+            <p>
+                Overall asset status
+            </p>
+
+            <div class="chart-container">
+
+                <canvas id="statusPieChart"></canvas>
+
+            </div>
+
+        </div>
+
+
+        <!-- BAR CHART -->
+
+        <div class="chart-card">
+
+            <h2>
+                Status by Location
+            </h2>
+
+            <p>
+                Active and inactive assets across locations
+            </p>
+
+            <div class="chart-container">
+
+                <canvas id="locationBarChart"></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+
+<script th:inline="javascript">
+
+    const activeCount =
+        /*[[${activeCount}]]*/ 0;
+
+    const inactiveCount =
+        /*[[${inactiveCount}]]*/ 0;
+
+
+    // ==========================================
+    // PIE CHART
+    // ==========================================
+
+    new Chart(
+        document.getElementById('statusPieChart'),
+        {
+            type: 'pie',
+
+            data: {
+
+                labels: [
+                    'Active',
+                    'Inactive'
+                ],
+
+                datasets: [{
+
+                    data: [
+                        activeCount,
+                        inactiveCount
+                    ]
+
+                }]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                plugins: {
+
+                    legend: {
+                        position: 'bottom'
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+
+    // ==========================================
+    // LOCATION DATA
+    // ==========================================
+
+    const locationData =
+        /*[[${locationData}]]*/ {};
+
+
+    const locations =
+        Object.keys(locationData);
+
+    const activeByLocation =
+        locations.map(
+            location =>
+                locationData[location][0]
+        );
+
+    const inactiveByLocation =
+        locations.map(
+            location =>
+                locationData[location][1]
+        );
+
+
+    // ==========================================
+    // BAR CHART
+    // ==========================================
+
+    new Chart(
+        document.getElementById('locationBarChart'),
+        {
+
+            type: 'bar',
+
+            data: {
+
+                labels: locations,
+
+                datasets: [
+
+                    {
+                        label: 'Active',
+                        data: activeByLocation
+                    },
+
+                    {
+                        label: 'Inactive',
+                        data: inactiveByLocation
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true,
+
+                        ticks: {
+
+                            precision: 0
+
+                        }
+
+                    }
+
+                },
+
+                plugins: {
+
+                    legend: {
+                        position: 'bottom'
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+</script>
+
+</body>
+
+</html>

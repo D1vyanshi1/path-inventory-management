@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <title>Asset Management Login</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:"Segoe UI", Arial, sans-serif;
+        }
+
+        body{
+            min-height:100vh;
+            background:#eef3f9;
+            overflow:hidden;
+        }
+
+
+        /* =========================================
+           MAIN WRAPPER
+           ========================================= */
+
+        .login-wrapper{
+
+            width:100%;
+            min-height:100vh;
+
+            display:flex;
+
+        }
+
+
+        /* =========================================
+           LEFT LOGIN SECTION
+           ========================================= */
+
+        .left-side{
+
+            width:42%;
+
+            display:flex;
+            align-items:center;
+            justify-content:center;
+
+            padding:40px;
+
+            background:#eef3f9;
+
+        }
+
+
+        /* =========================================
+           LOGIN CARD
+           ========================================= */
+
+        .login-card{
+
+            width:100%;
+            max-width:430px;
+
+            background:#ffffff;
+
+            padding:42px 44px;
+
+            border-radius:20px;
+
+            box-shadow:
+                    0 12px 35px rgba(29,53,87,.12);
+
+            border:1px solid #e3eaf2;
+
+        }
+
+
+        .login-card h2{
+
+            color:#1d3557;
+
+            font-size:36px;
+            font-weight:700;
+
+            margin-bottom:8px;
+
+        }
+
+
+        .subtitle{
+
+            color:#718096;
+
+            font-size:16px;
+
+            margin-bottom:30px;
+
+        }
+
+
+        /* =========================================
+           FORM GROUPS
+           ========================================= */
+
+        .form-group{
+
+            margin-bottom:18px;
+
+        }
+
+
+        .form-label{
+
+            display:block;
+
+            margin-bottom:7px;
+
+            color:#1d3557;
+
+            font-size:14px;
+
+            font-weight:600;
+
+        }
+
+
+        /* =========================================
+           INPUTS
+           ========================================= */
+
+        .login-card input{
+
+            width:100%;
+
+            height:50px;
+
+            padding:0 15px;
+
+            border:1px solid #d8e0ea;
+
+            border-radius:9px;
+
+            background:#ffffff;
+
+            color:#26384d;
+
+            font-size:15px;
+
+            transition:.25s;
+
+        }
+
+
+        .login-card input::placeholder{
+
+            color:#9aa7b5;
+
+        }
+
+
+        .login-card input:focus{
+
+            outline:none;
+
+            border-color:#1976d2;
+
+            box-shadow:
+                    0 0 0 3px rgba(25,118,210,.10);
+
+        }
+
+
+        /* =========================================
+           CAPTCHA
+           ========================================= */
+
+        .captcha-section{
+
+            margin-top:4px;
+            margin-bottom:18px;
+
+        }
+
+
+        .captcha-label{
+
+            display:block;
+
+            margin-bottom:9px;
+
+            color:#1d3557;
+
+            font-size:14px;
+
+            font-weight:600;
+
+        }
+
+
+        .captcha-code{
+
+            width:220px;
+
+            height:55px;
+
+            display:flex;
+
+            align-items:center;
+            justify-content:center;
+
+            background:#f0f6ff;
+
+            border:2px solid #1976d2;
+
+            border-radius:9px;
+
+            color:#0d47a1;
+
+            font-family:"Courier New", monospace;
+
+            font-size:25px;
+
+            font-weight:bold;
+
+            letter-spacing:8px;
+
+            margin-bottom:12px;
+
+            user-select:none;
+
+            transform:rotate(-1deg);
+
+        }
+
+
+        /* =========================================
+           LOGIN BUTTON
+           ========================================= */
+
+        .login-button{
+
+            width:100%;
+
+            height:52px;
+
+            margin-top:6px;
+
+            border:none;
+
+            border-radius:9px;
+
+            background:linear-gradient(
+                    90deg,
+                    #1565c0,
+                    #1976d2
+            );
+
+            color:white;
+
+            font-size:16px;
+
+            font-weight:700;
+
+            cursor:pointer;
+
+            transition:.25s;
+
+        }
+
+
+        .login-button:hover{
+
+            background:linear-gradient(
+                    90deg,
+                    #0d5cad,
+                    #1565c0
+            );
+
+            transform:translateY(-1px);
+
+            box-shadow:
+                    0 7px 18px rgba(25,118,210,.25);
+
+        }
+
+
+        /* =========================================
+           PASSWORD LINKS
+           ========================================= */
+
+        .login-links{
+
+            display:flex;
+
+            justify-content:space-between;
+
+            align-items:center;
+
+            margin-top:20px;
+
+            padding-top:2px;
+
+        }
+
+
+        .login-link{
+
+            color:#1976d2;
+
+            text-decoration:none;
+
+            font-size:14px;
+
+            font-weight:600;
+
+        }
+
+
+        .login-link:hover{
+
+            text-decoration:underline;
+
+        }
+
+
+        /* =========================================
+           MESSAGES
+           ========================================= */
+
+        .message-error{
+
+            margin-top:16px;
+
+            padding:12px 14px;
+
+            background:#fff1f0;
+
+            border:1px solid #ffd5d2;
+
+            color:#c62828;
+
+            border-radius:8px;
+
+            text-align:center;
+
+            font-size:14px;
+
+            font-weight:500;
+
+        }
+
+
+        .message-success{
+
+            margin-bottom:18px;
+
+            padding:12px 14px;
+
+            background:#edf8f0;
+
+            border:1px solid #c9e9d0;
+
+            color:#287a3e;
+
+            border-radius:8px;
+
+            text-align:center;
+
+            font-size:14px;
+
+            font-weight:600;
+
+        }
+
+
+        /* =========================================
+           RIGHT BRANDING SECTION
+           ========================================= */
+
+        .right-side{
+
+            width:58%;
+
+            background:linear-gradient(
+                    135deg,
+                    #0d47a1 0%,
+                    #1976d2 50%,
+                    #42a5f5 100%
+            );
+
+            display:flex;
+
+            align-items:center;
+            justify-content:center;
+
+            position:relative;
+
+            overflow:hidden;
+
+        }
+
+
+        /* =========================================
+           DECORATIVE CIRCLES
+           ========================================= */
+
+        .right-side::before{
+
+            content:"";
+
+            position:absolute;
+
+            width:650px;
+            height:650px;
+
+            border-radius:50%;
+
+            background:rgba(255,255,255,.07);
+
+            top:-280px;
+            right:-190px;
+
+        }
+
+
+        .right-side::after{
+
+            content:"";
+
+            position:absolute;
+
+            width:480px;
+            height:480px;
+
+            border-radius:50%;
+
+            background:rgba(255,255,255,.06);
+
+            bottom:-250px;
+            left:-160px;
+
+        }
+
+
+        /* =========================================
+           BRANDING
+           ========================================= */
+
+        .branding{
+
+            position:relative;
+
+            z-index:2;
+
+            width:90%;
+
+            max-width:650px;
+
+            text-align:center;
+
+            color:white;
+
+            padding:30px;
+
+        }
+
+
+        .logo{
+
+            width:125px;
+
+            margin-bottom:25px;
+
+            filter:
+                    drop-shadow(
+                            0 8px 15px rgba(0,0,0,.20)
+                    );
+
+        }
+
+
+        .branding h1{
+
+            font-size:48px;
+
+            line-height:1.08;
+
+            font-weight:800;
+
+            letter-spacing:2px;
+
+            margin-bottom:22px;
+
+        }
+
+
+        .line{
+
+            width:180px;
+
+            height:3px;
+
+            background:white;
+
+            margin:0 auto 25px;
+
+            border-radius:20px;
+
+        }
+
+
+        .tagline{
+
+            font-size:24px;
+
+            font-weight:500;
+
+            color:#e3f2fd;
+
+            margin-bottom:15px;
+
+        }
+
+
+        .small-text{
+
+            font-size:16px;
+
+            color:#dbeafe;
+
+            letter-spacing:.8px;
+
+        }
+
+
+        /* =========================================
+           RESPONSIVE
+           ========================================= */
+
+        @media(max-width:1000px){
+
+            body{
+
+                overflow:auto;
+
+            }
+
+
+            .right-side{
+
+                display:none;
+
+            }
+
+
+            .left-side{
+
+                width:100%;
+
+                min-height:100vh;
+
+                padding:30px 20px;
+
+            }
+
+
+            .login-card{
+
+                max-width:430px;
+
+            }
+
+        }
+
+
+        @media(max-width:500px){
+
+            .left-side{
+
+                padding:20px 15px;
+
+            }
+
+
+            .login-card{
+
+                padding:32px 25px;
+
+                border-radius:16px;
+
+            }
+
+
+            .login-card h2{
+
+                font-size:31px;
+
+            }
+
+
+            .subtitle{
+
+                font-size:15px;
+
+                margin-bottom:25px;
+
+            }
+
+
+            .captcha-code{
+
+                width:200px;
+
+                font-size:23px;
+
+                letter-spacing:6px;
+
+            }
+
+
+            .login-links{
+
+                flex-direction:column;
+
+                gap:12px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="login-wrapper">
+
+
+    <!-- =====================================
+         LEFT SIDE - LOGIN
+         ===================================== -->
+
+    <div class="left-side">
+
+
+        <div class="login-card">
+
+
+            <h2>
+                Welcome Back
+            </h2>
+
+
+            <p class="subtitle">
+                Sign in to continue
+            </p>
+
+
+            <!-- PASSWORD RESET SUCCESS -->
+
+            <div class="message-success"
+                 th:if="${param.resetSuccess}">
+
+                Password has been reset successfully.
+                Please login.
+
+            </div>
+
+
+            <!-- LOGIN FORM -->
+
+            <form th:action="@{/login}"
+                  method="post">
+
+
+                <!-- USERNAME -->
+
+                <div class="form-group">
+
+                    <label class="form-label">
+                        Username
+                    </label>
+
+                    <input
+                            type="text"
+                            name="username"
+                            placeholder="Enter username"
+                            autocomplete="username"
+                            required>
+
+                </div>
+
+
+                <!-- PASSWORD -->
+
+                <div class="form-group">
+
+                    <label class="form-label">
+                        Password
+                    </label>
+
+                    <input
+                            type="password"
+                            name="password"
+                            placeholder="Enter password"
+                            autocomplete="current-password"
+                            required>
+
+                </div>
+
+
+                <!-- CAPTCHA -->
+
+                <div class="captcha-section">
+
+                    <label class="captcha-label">
+                        Verification Code
+                    </label>
+
+
+                    <div class="captcha-code"
+                         th:text="${captcha}">
+                    </div>
+
+
+                    <input
+                            type="text"
+                            name="captchaInput"
+                            placeholder="Enter verification code"
+                            autocomplete="off"
+                            required>
+
+                </div>
+
+
+                <!-- LOGIN BUTTON -->
+
+                <button
+                        type="submit"
+                        class="login-button">
+
+                    Login
+
+                </button>
+
+
+                <!-- PASSWORD LINKS -->
+
+                <div class="login-links">
+
+                    <a th:href="@{/forgot-password}"
+                       class="login-link">
+
+                        Forgot Password?
+
+                    </a>
+
+
+                    <a th:href="@{/reset-password}"
+                       class="login-link">
+
+                        Reset Password
+
+                    </a>
+
+                </div>
+
+
+            </form>
+
+
+            <!-- LOGIN ERROR -->
+
+            <div class="message-error"
+                 th:if="${param.error}">
+
+                Invalid username or password.
+
+            </div>
+
+
+            <!-- CAPTCHA ERROR -->
+
+            <div class="message-error"
+                 th:if="${param.captchaError}">
+
+                Invalid verification code.
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================
+         RIGHT SIDE - BRANDING
+         ===================================== -->
+
+    <div class="right-side">
+
+
+        <div class="branding">
+
+
+            <img
+                    th:src="@{/images/path-logo.png}"
+                    class="logo"
+                    alt="PATH Logo">
+
+
+            <h1>
+
+                ASSET
+                <br>
+                MANAGEMENT
+                <br>
+                SYSTEM
+
+            </h1>
+
+
+            <div class="line"></div>
+
+
+            <p class="tagline">
+
+                Manage • Track • Secure Assets
+
+            </p>
+
+
+            <p class="small-text">
+
+                Smart Inventory Management Solution
+
+            </p>
+
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>

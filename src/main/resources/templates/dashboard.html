@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <link rel="stylesheet" th:href="@{/app.css}">
+
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <title>Inventory Dashboard</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <style>
+
+        #assetMap {
+            width: 100%;
+            height: 390px;
+            border-radius: 0 0 16px 16px;
+            overflow: hidden;
+        }
+
+        .map-city-popup {
+            text-align: center;
+            min-width: 130px;
+        }
+
+        .map-city-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #17365d;
+            margin-bottom: 4px;
+        }
+
+        .map-city-country {
+            color: #718096;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .map-city-action {
+            color: #1976d2;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .country-label {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            color: #17365d;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+    </style>
+
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================
+     HEADER
+     ========================================= -->
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+
+<!-- =========================================
+     NAVBAR
+     ========================================= -->
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+<!-- =========================================
+     MAIN CONTENT
+     ========================================= -->
+
+<div class="main-content">
+
+
+    <!-- =====================================
+         DASHBOARD TITLE
+         ===================================== -->
+
+    <div class="dashboard-header">
+
+        <h1 class="dashboard-title">
+            Asset Management Dashboard
+        </h1>
+
+        <div id="locationBadge"
+             class="location-badge">
+
+            Location:
+            <span id="selectedLocation"></span>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================
+         DASHBOARD
+         ===================================== -->
+
+    <div class="dashboard-container">
+
+
+        <!-- =================================
+             LEFT SIDE
+             ================================= -->
+
+        <div class="cards-section">
+
+
+            <!-- TOTAL DEVICES -->
+
+            <a th:href="@{/devices}"
+               class="card-link">
+
+                <div class="card">
+
+                    <h2>
+                        Total Devices
+                    </h2>
+
+                    <div id="totalDevices"
+                         class="number"
+                         th:text="${totalDevices}">
+                    </div>
+
+                </div>
+
+            </a>
+
+
+            <!-- AVAILABLE DEVICES -->
+
+            <a th:href="@{/devices(status='available')}"
+               class="card-link">
+
+                <div class="card">
+
+                    <h2>
+                        Available Devices
+                    </h2>
+
+                    <div id="availableDevices"
+                         class="number"
+                         th:text="${availableDevices}">
+                    </div>
+
+                </div>
+
+            </a>
+
+
+            <!-- ASSIGNED DEVICES -->
+
+            <a th:href="@{/devices(status='assigned')}"
+               class="card-link">
+
+                <div class="card">
+
+                    <h2>
+                        Assigned Devices
+                    </h2>
+
+                    <div id="assignedDevices"
+                         class="number"
+                         th:text="${assignedDevices}">
+                    </div>
+
+                </div>
+
+            </a>
+
+
+            <!-- TOTAL EMPLOYEES -->
+
+            <a th:href="@{/employees}"
+               class="card-link">
+
+                <div class="card">
+
+                    <h2>
+                        Total Employees
+                    </h2>
+
+                    <div id="totalEmployees"
+                         class="number"
+                         th:text="${totalEmployees}">
+                    </div>
+
+                </div>
+
+            </a>
+
+
+        </div>
+
+
+        <!-- =================================
+             RIGHT SIDE - GLOBE
+             ================================= -->
+
+        <div class="globe-card">
+
+            <h2 class="globe-title">
+                Asset Locations
+            </h2>
+
+            <div id="assetMap"></div>
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+<!-- =========================================
+     FOOTER
+     ========================================= -->
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script>
+
+    /* ==========================================
+       CITY DATA
+       ========================================== */
+
+    const cities = [
+
+        {
+            name: "Delhi",
+            country: "India",
+            lat: 28.6139,
+            lng: 77.2090
+        },
+
+        {
+            name: "Mumbai",
+            country: "India",
+            lat: 19.0760,
+            lng: 72.8777
+        },
+
+        {
+            name: "Lucknow",
+            country: "India",
+            lat: 26.8467,
+            lng: 80.9462
+        },
+
+        {
+            name: "Kathmandu",
+            country: "Nepal",
+            lat: 27.7172,
+            lng: 85.3240
+        },
+
+        {
+            name: "Pokhara",
+            country: "Nepal",
+            lat: 28.2096,
+            lng: 83.9856
+        },
+
+        {
+            name: "Dhaka",
+            country: "Bangladesh",
+            lat: 23.8103,
+            lng: 90.4125
+        },
+
+        {
+            name: "Chattogram",
+            country: "Bangladesh",
+            lat: 22.3569,
+            lng: 91.7832
+        }
+
+    ];
+
+
+    /* ==========================================
+       CREATE REAL MAP
+       ========================================== */
+
+    const map = L.map("assetMap");
+
+
+    /* ==========================================
+       REAL OPENSTREETMAP MAP
+       ========================================== */
+
+    L.tileLayer(
+        "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+        {
+            attribution:
+                '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank">CARTO</a>',
+
+            subdomains: "abcd",
+
+            maxZoom: 20
+        }
+    ).addTo(map);
+
+
+    /* ==========================================
+       CENTER MAP ON INDIA + NEPAL + BANGLADESH
+       ========================================== */
+
+    map.setView(
+        [24.5, 82.5],
+        4
+    );
+
+    /* ==========================================
+       COUNTRY HOVER LAYER
+       ========================================== */
+
+    let countriesLayer;
+
+
+    /* Normal country appearance */
+
+    const normalCountryStyle = {
+        color: "#6b7280",
+        weight: 1.5,
+        fillColor: "#ffffff",
+        fillOpacity: 0.05
+    };
+
+
+    /* Highlighted country appearance */
+
+    const highlightedCountryStyle = {
+        color: "#1976d2",
+        weight: 3,
+        fillColor: "#1976d2",
+        fillOpacity: 0.20
+    };
+
+
+    /* Hover over country */
+
+    function highlightCountry(event) {
+
+        const layer = event.target;
+
+        layer.setStyle(
+            highlightedCountryStyle
+        );
+
+        layer.bringToFront();
+    }
+
+
+    /* Mouse leaves country */
+
+    function resetCountry(event) {
+
+        countriesLayer.resetStyle(
+            event.target
+        );
+    }
+
+
+    /* Country events */
+
+    function onEachCountry(feature, layer) {
+
+        const countryName =
+            feature.properties.name;
+
+
+        /*
+         * Only make India, Nepal and
+         * Bangladesh interactive.
+         */
+
+        if (
+            countryName === "India" ||
+            countryName === "Nepal" ||
+            countryName === "Bangladesh"
+        ) {
+
+            layer.on({
+
+                mouseover:
+                highlightCountry,
+
+                mouseout:
+                resetCountry
+
+            });
+
+
+            layer.bindTooltip(
+                countryName,
+                {
+                    sticky: true,
+                    direction: "center",
+                    className: "country-label"
+                }
+            );
+
+        }
+
+    }
+
+
+    /* Load real country boundaries */
+
+    fetch(
+        "https://raw.githubusercontent.com/wri/wri-bounds/master/dist/in_countries.min.geojson"
+    )
+
+        .then(response => {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Unable to load country boundaries"
+                );
+
+            }
+
+            return response.json();
+
+        })
+
+        .then(data => {
+
+            countriesLayer =
+                L.geoJSON(
+                    data,
+                    {
+
+                        style:
+                        normalCountryStyle,
+
+                        onEachFeature:
+                        onEachCountry,
+
+                        /*
+                         * Only display the three
+                         * countries we want.
+                         */
+
+                        filter:
+                            function(feature) {
+
+                                const name =
+                                    feature.properties.name;
+
+                                return (
+                                    name === "India" ||
+                                    name === "Nepal" ||
+                                    name === "Bangladesh"
+                                );
+
+                            }
+
+                    }
+                ).addTo(map);
+
+
+            /*
+             * Keep country polygons behind
+             * your city markers.
+             */
+
+            countriesLayer.bringToBack();
+
+        })
+
+        .catch(error => {
+
+            console.error(
+                "Error loading country boundaries:",
+                error
+            );
+
+        });
+
+    /* ==========================================
+       CITY MARKERS
+       ========================================== */
+
+    cities.forEach(city => {
+
+        const marker =
+            L.marker([
+                city.lat,
+                city.lng
+            ]).addTo(map);
+
+
+        marker.bindPopup(`
+
+            <div class="map-city-popup">
+
+                <div class="map-city-name">
+                    ${city.name}
+                </div>
+
+                <div class="map-city-country">
+                    ${city.country}
+                </div>
+
+                <div class="map-city-action">
+                    Click to view details
+                </div>
+
+            </div>
+
+        `);
+
+
+        marker.on(
+            "click",
+            function () {
+
+                selectLocation(
+                    city.name
+                );
+
+            }
+        );
+
+    });
+
+
+    /* ==========================================
+       SELECT LOCATION
+       ========================================== */
+
+    function selectLocation(location) {
+
+        fetch(
+            "/dashboard/location?location=" +
+            encodeURIComponent(location)
+        )
+
+            .then(response => {
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Unable to load location data"
+                    );
+
+                }
+
+                return response.json();
+
+            })
+
+            .then(data => {
+
+                document.getElementById(
+                    "totalDevices"
+                ).innerText =
+                    data.totalDevices;
+
+
+                document.getElementById(
+                    "availableDevices"
+                ).innerText =
+                    data.availableDevices;
+
+
+                document.getElementById(
+                    "assignedDevices"
+                ).innerText =
+                    data.assignedDevices;
+
+
+                document.getElementById(
+                    "totalEmployees"
+                ).innerText =
+                    data.totalEmployees;
+
+
+                document.getElementById(
+                    "selectedLocation"
+                ).innerText =
+                    location;
+
+
+                document.getElementById(
+                    "locationBadge"
+                ).style.display =
+                    "block";
+
+            })
+
+            .catch(error => {
+
+                console.error(
+                    "Error loading location:",
+                    error
+                );
+
+            });
+
+    }
+
+</script>
+
+</body>
+
+</html>

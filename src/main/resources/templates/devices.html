@@ -1,0 +1,1654 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <title>Devices | PATH Asset Management</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet"
+          th:href="@{/app.css}">
+
+    <style>
+
+        /* =====================================================
+           DEVICES PAGE
+           ===================================================== */
+
+        .devices-page {
+            width: min(1450px, 94%);
+            margin: 0 auto;
+            padding: 32px 0 50px;
+        }
+
+
+        /* =====================================================
+           PAGE HEADER
+           ===================================================== */
+
+        .devices-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            margin-bottom: 25px;
+        }
+
+        .devices-header h1 {
+            margin: 0;
+
+            color: #17365d;
+
+            font-size: 30px;
+            font-weight: 700;
+        }
+
+        .devices-header p {
+            margin: 7px 0 0;
+
+            color: #718096;
+
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+           TOP ACTIONS
+           ===================================================== */
+
+        .device-actions {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+        }
+
+        .device-action {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            min-height: 42px;
+
+            padding: 0 17px;
+
+            border-radius: 8px;
+
+            text-decoration: none;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            white-space: nowrap;
+
+            transition:
+                    background .2s ease,
+                    transform .2s ease,
+                    box-shadow .2s ease;
+        }
+
+        .device-action:hover {
+            transform: translateY(-1px);
+
+            text-decoration: none;
+        }
+
+        .add-device {
+            background: #005eb8;
+            color: white;
+        }
+
+        .add-device:hover {
+            background: #004b93;
+            color: white;
+        }
+
+        .export-device {
+            background: #eaf6ef;
+            color: #167447;
+
+            border: 1px solid #ccebd8;
+        }
+
+        .export-device:hover {
+            background: #dff1e7;
+            color: #167447;
+        }
+
+        .reset-device {
+            background: #f1f4f7;
+            color: #526274;
+
+            border: 1px solid #dfe7f0;
+        }
+
+        .reset-device:hover {
+            background: #e7ecf1;
+            color: #526274;
+        }
+
+
+        /* =====================================================
+           FILTER PANEL
+           ===================================================== */
+
+        .device-filter-panel {
+            padding: 18px;
+
+            margin-bottom: 22px;
+
+            background: #ffffff;
+
+            border: 1px solid #dfe7f0;
+
+            border-radius: 12px;
+
+            box-shadow:
+                    0 3px 12px rgba(20, 50, 80, .05);
+        }
+
+        .device-filters {
+            display: grid;
+
+            grid-template-columns:
+                minmax(250px, 1.7fr)
+                minmax(150px, .8fr)
+                minmax(150px, .8fr)
+                minmax(150px, .8fr)
+                150px
+                170px;
+
+            gap: 12px;
+
+            align-items: center;
+        }
+
+
+        /* =====================================================
+           SEARCH
+           ===================================================== */
+
+        .search-form {
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            width: 100%;
+        }
+
+        .search-box {
+            width: 100%;
+
+            height: 43px;
+
+            padding: 0 13px;
+
+            border: 1px solid #d6e0eb;
+
+            border-radius: 8px;
+
+            outline: none;
+
+            font-size: 13px;
+
+            color: #26384f;
+
+            transition:
+                    border-color .2s ease,
+                    box-shadow .2s ease;
+        }
+
+        .search-box:focus {
+            border-color: #005eb8;
+
+            box-shadow:
+                    0 0 0 3px rgba(0, 94, 184, .08);
+        }
+
+        .search-button {
+            height: 43px;
+
+            padding: 0 16px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #005eb8;
+
+            color: white;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            white-space: nowrap;
+        }
+
+        .search-button:hover {
+            background: #004b93;
+        }
+
+
+        /* =====================================================
+           SELECTS
+           ===================================================== */
+
+        .select-box {
+
+            width: 100%;
+
+            height: 43px;
+
+            padding: 0 11px;
+
+            border: 1px solid #d6e0eb;
+
+            border-radius: 8px;
+
+            background: white;
+
+            color: #526274;
+
+            font-size: 13px;
+
+            cursor: pointer;
+
+            outline: none;
+        }
+
+        .select-box:focus {
+
+            border-color: #005eb8;
+
+            box-shadow:
+                    0 0 0 3px rgba(0, 94, 184, .08);
+        }
+
+
+        /* =====================================================
+           COUNTRY DROPDOWN
+           ===================================================== */
+
+        .country-dropdown {
+
+            position: relative;
+
+            width: 100%;
+        }
+
+        .country-btn {
+
+            width: 100%;
+
+            height: 43px;
+
+            padding: 0 12px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            border: 1px solid #d6e0eb;
+
+            border-radius: 8px;
+
+            background: white;
+
+            color: #526274;
+
+            font-size: 13px;
+
+            cursor: pointer;
+        }
+
+        .country-btn:hover {
+
+            border-color: #b9cde0;
+
+            background: #f9fbfd;
+        }
+
+        .country-menu {
+
+            display: none;
+
+            position: absolute;
+
+            top: 48px;
+
+            left: 0;
+
+            width: 180px;
+
+            padding: 12px;
+
+            background: white;
+
+            border: 1px solid #dfe7f0;
+
+            border-radius: 9px;
+
+            box-shadow:
+                    0 10px 25px rgba(20, 50, 80, .14);
+
+            z-index: 1000;
+        }
+
+        .country-menu label {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            padding: 7px 5px;
+
+            margin: 0;
+
+            border-radius: 5px;
+
+            color: #526274;
+
+            font-size: 13px;
+
+            cursor: pointer;
+        }
+
+        .country-menu label:hover {
+
+            background: #f2f7fc;
+        }
+
+        .country-menu input {
+
+            accent-color: #005eb8;
+
+        }
+
+
+        /* =====================================================
+           ERROR
+           ===================================================== */
+
+        .device-error {
+
+            padding: 12px 15px;
+
+            margin-bottom: 20px;
+
+            background: #fdf0f0;
+
+            color: #b4232d;
+
+            border: 1px solid #f2caca;
+
+            border-radius: 8px;
+
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+
+        /* =====================================================
+           TABLE CARD
+           ===================================================== */
+
+        .device-table-card {
+
+            background: #ffffff;
+
+            border: 1px solid #dfe7f0;
+
+            border-radius: 14px;
+
+            box-shadow:
+                    0 3px 12px rgba(20, 50, 80, .06);
+
+            overflow: hidden;
+        }
+
+        .table-scroll {
+
+            width: 100%;
+
+            overflow-x: auto;
+        }
+
+        .device-table {
+
+            width: 100%;
+
+            min-width: 1900px;
+
+            border-collapse: collapse;
+
+            background: white;
+        }
+
+        .device-table th {
+
+            padding: 14px 13px;
+
+            background: #f5f8fc;
+
+            border-bottom: 1px solid #dfe7f0;
+
+            color: #17365d;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            text-align: center;
+
+            white-space: nowrap;
+        }
+
+        .device-table th a {
+
+            color: #17365d;
+
+            text-decoration: none;
+        }
+
+        .device-table th a:hover {
+
+            color: #005eb8;
+
+            text-decoration: none;
+        }
+
+        .device-table td {
+
+            padding: 13px;
+
+            border-bottom: 1px solid #edf1f5;
+
+            color: #526274;
+
+            font-size: 13px;
+
+            text-align: center;
+
+            vertical-align: middle;
+
+            white-space: nowrap;
+        }
+
+        .device-table tbody tr {
+
+            transition:
+                    background .15s ease;
+        }
+
+        .device-table tbody tr:hover {
+
+            background: #f7fbff;
+        }
+
+        .device-table tbody tr:last-child td {
+
+            border-bottom: none;
+        }
+
+
+        /* =====================================================
+           DEVICE NAME
+           ===================================================== */
+
+        .device-name {
+
+            color: #005eb8 !important;
+
+            font-weight: 600;
+
+            text-decoration: none;
+        }
+
+        .device-name:hover {
+
+            color: #004b93 !important;
+
+            text-decoration: underline;
+        }
+
+
+        /* =====================================================
+           STATUS
+           ===================================================== */
+
+        .device-status {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 5px 10px;
+
+            border-radius: 20px;
+
+            font-size: 11px;
+
+            font-weight: 700;
+        }
+
+        .status-available {
+
+            background: #e8f7ef;
+
+            color: #147a45;
+        }
+
+        .status-assigned {
+
+            background: #eaf2ff;
+
+            color: #1557a6;
+        }
+
+
+        /* =====================================================
+           ACTIONS
+           ===================================================== */
+
+        .device-actions-cell {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 7px;
+        }
+
+        .table-action {
+
+            padding: 6px 9px;
+
+            border-radius: 6px;
+
+            font-size: 11px;
+
+            font-weight: 600;
+
+            text-decoration: none;
+
+            transition: .2s ease;
+        }
+
+        .table-action:hover {
+
+            text-decoration: none;
+
+            transform: translateY(-1px);
+        }
+
+        .edit-action {
+
+            background: #eaf2ff;
+
+            color: #1557a6;
+        }
+
+        .edit-action:hover {
+
+            background: #dceaff;
+
+            color: #1557a6;
+        }
+
+        .delete-action {
+
+            background: #fdecec;
+
+            color: #b4232d;
+        }
+
+        .delete-action:hover {
+
+            background: #f9dddd;
+
+            color: #b4232d;
+        }
+
+        .return-action {
+
+            background: #fff5df;
+
+            color: #956400;
+        }
+
+        .return-action:hover {
+
+            background: #ffedc5;
+
+            color: #956400;
+        }
+
+
+        /* =====================================================
+           DEVICE IMAGE
+           ===================================================== */
+
+        .device-image {
+
+            width: 65px;
+
+            height: 65px;
+
+            object-fit: cover;
+
+            border-radius: 8px;
+
+            border: 1px solid #dfe7f0;
+
+            box-shadow:
+                    0 2px 6px rgba(20, 50, 80, .08);
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+           ===================================================== */
+
+        @media (max-width: 1200px) {
+
+            .device-filters {
+
+                grid-template-columns:
+                    repeat(3, 1fr);
+
+            }
+
+            .search-form {
+
+                grid-column: span 3;
+
+            }
+        }
+
+
+        @media (max-width: 800px) {
+
+            .devices-page {
+
+                width: 94%;
+
+                padding-top: 24px;
+
+            }
+
+            .devices-header {
+
+                flex-direction: column;
+
+                align-items: flex-start;
+
+            }
+
+            .device-actions {
+
+                width: 100%;
+
+            }
+
+            .device-action {
+
+                flex: 1;
+
+            }
+
+            .device-filters {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            .search-form {
+
+                grid-column: auto;
+
+            }
+
+            .device-filter-panel {
+
+                padding: 14px;
+
+            }
+
+        }
+
+        .verification-device {
+            background: #fff4df;
+            color: #956400;
+            border: 1px solid #f0d9a6;
+        }
+
+        .verification-device:hover {
+            background: #ffedc5;
+            color: #7f5400;
+        }
+
+        .reporting-device {
+            background: #eef4ff;
+            color: #2457a6;
+            border: 1px solid #d5e2f7;
+        }
+
+        .reporting-device:hover {
+            background: #e2ecff;
+            color: #1d4789;
+        }
+
+        .depreciation-device {
+            background: #f3edff;
+            color: #6941c6;
+            border: 1px solid #ddd0f7;
+        }
+
+        .depreciation-device:hover {
+            background: #e9ddff;
+            color: #5634a5;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     HEADER
+     ===================================================== -->
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+
+<!-- =====================================================
+     NAVBAR
+     ===================================================== -->
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+<main class="devices-page">
+
+
+    <!-- =================================================
+         PAGE HEADER
+         ================================================= -->
+
+    <div class="devices-header">
+
+        <div>
+
+            <h1>
+                Devices
+            </h1>
+
+            <p>
+                Manage, track and monitor organizational assets
+            </p>
+
+        </div>
+
+
+        <div class="device-actions">
+
+            <a th:href="@{/devices/new}"
+               class="device-action add-device">
+
+                + Add New Device
+
+            </a>
+
+            <a th:href="@{/devices/physical-verification}"
+               class="device-action verification-device">
+
+                Physical Verification
+
+            </a>
+
+            <a th:href="@{/devices/reporting}"
+               class="device-action reporting-device">
+
+                Reporting
+
+            </a>
+
+            <a th:href="@{/devices/depreciation}"
+               class="device-action depreciation-device">
+
+                Depreciation
+
+            </a>
+
+            <a th:href="@{/devices/export}"
+               class="device-action export-device">
+
+                Export to Excel
+
+            </a>
+
+            <a th:href="@{/devices}"
+               class="device-action reset-device">
+
+                Show All
+
+            </a>
+
+        </div>
+    </div>
+
+
+    <!-- =================================================
+         FILTERS
+         ================================================= -->
+
+    <div class="device-filter-panel">
+
+        <div class="device-filters">
+
+
+            <!-- SEARCH -->
+
+            <form th:action="@{/devices/search}"
+                  method="get"
+                  class="search-form">
+
+                <input
+                        type="text"
+                        name="keyword"
+                        placeholder="Search product, serial number or tag number..."
+                        class="search-box">
+
+                <button type="submit"
+                        class="search-button">
+
+                    🔍 Search
+
+                </button>
+
+            </form>
+
+
+            <!-- CATEGORY -->
+
+            <form th:action="@{/devices/category}"
+                  method="get">
+
+                <select
+                        name="category"
+                        onchange="this.form.submit()"
+                        class="select-box">
+
+                    <option value="All">
+                        Asset Categories
+                    </option>
+
+                    <option value="Furniture & Fixture">
+                        Furniture & Fixture
+                    </option>
+
+                    <option value="Office Equipment">
+                        Office Equipment
+                    </option>
+
+                    <option value="Computer & Software">
+                        Computer & Software
+                    </option>
+
+                    <option value="Vehicle">
+                        Vehicle
+                    </option>
+
+                    <option value="Lease Hold Improvement">
+                        Lease Hold Improvement
+                    </option>
+
+                </select>
+
+            </form>
+
+
+            <!-- STATUS -->
+
+            <form th:action="@{/devices}"
+                  method="get">
+
+                <select
+                        name="status"
+                        onchange="this.form.submit()"
+                        class="select-box">
+
+                    <option value="">
+                        All Status
+                    </option>
+
+                    <option value="available">
+                        Available
+                    </option>
+
+                    <option value="assigned">
+                        Assigned
+                    </option>
+
+                </select>
+
+            </form>
+
+            <!-- PURCHASE SOURCE -->
+
+            <form th:action="@{/devices}"
+                  method="get">
+
+                <select
+                        name="purchaseSource"
+                        onchange="this.form.submit()"
+                        class="select-box">
+
+                    <option value="">
+                        Purchase Source
+                    </option>
+
+                    <option value="Local">
+                        Local
+                    </option>
+
+                    <option value="HQ">
+                        HQ
+                    </option>
+
+                </select>
+
+            </form>
+
+            <!-- COUNTRY -->
+
+            <div class="country-dropdown">
+
+                <button
+                        type="button"
+                        class="country-btn"
+                        onclick="toggleCountryDropdown()">
+
+                    <span>
+                        Country
+                    </span>
+
+                    <span>
+                        ▼
+                    </span>
+
+                </button>
+
+
+                <div id="countryMenu"
+                     class="country-menu">
+
+                    <label>
+
+                        <input
+                                type="checkbox"
+                                value="India"
+                                onclick="selectCountry(this)">
+
+                        India
+
+                    </label>
+
+
+                    <label>
+
+                        <input
+                                type="checkbox"
+                                value="Nepal"
+                                onclick="selectCountry(this)">
+
+                        Nepal
+
+                    </label>
+
+
+                    <label>
+
+                        <input
+                                type="checkbox"
+                                value="Bangladesh"
+                                onclick="selectCountry(this)">
+
+                        Bangladesh
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- OFFICE -->
+
+            <select
+                    id="officeLocation"
+                    class="select-box"
+                    disabled>
+
+                <option value="">
+                    Select Office
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         ERROR
+         ================================================= -->
+
+    <div th:if="${error}"
+         class="device-error">
+
+        <span th:text="${error}">
+        </span>
+
+    </div>
+
+
+    <!-- =================================================
+         DEVICE TABLE
+         ================================================= -->
+
+    <div class="device-table-card">
+
+        <div class="table-scroll">
+
+            <table class="device-table">
+
+
+                <thead>
+
+                <tr>
+
+
+                    <th>
+                        <a th:href="@{/devices(sortBy='id',direction=${sortBy=='id' and direction=='asc' ? 'desc':'asc'})}">
+                            S.No.
+                        </a>
+                    </th>
+
+
+                    <th>
+                        <a th:href="@{/devices(sortBy='tagNumber',direction=${sortBy=='tagNumber' and direction=='asc' ? 'desc':'asc'})}">
+                            Tag Number
+                        </a>
+                    </th>
+
+
+                    <th>
+                        <a th:href="@{/devices(sortBy='deviceName',direction=${sortBy=='deviceName' and direction=='asc' ? 'desc':'asc'})}">
+                            Product Name
+                        </a>
+                    </th>
+
+
+                    <th>
+                        <a th:href="@{/devices(sortBy='category',direction=${sortBy=='category' and direction=='asc' ? 'desc':'asc'})}">
+                            Category
+                        </a>
+                    </th>
+
+                    <th>
+                        Purchase Source
+                    </th>
+
+                    <th>
+                        <a th:href="@{/devices(sortBy='serialNumber',direction=${sortBy=='serialNumber' and direction=='asc' ? 'desc':'asc'})}">
+                            Serial No.
+                        </a>
+                    </th>
+
+
+                    <th>
+                        <a th:href="@{/devices(sortBy='manufacturer',direction=${sortBy=='manufacturer' and direction=='asc' ? 'desc':'asc'})}">
+                            Manufacturer
+                        </a>
+                    </th>
+
+
+                    <th>
+                        <a th:href="@{/devices(sortBy='assetPutUseDate',direction=${sortBy=='assetPutUseDate' and direction=='asc' ? 'desc':'asc'})}">
+                            Asset Put Use Date
+                        </a>
+                    </th>
+
+
+                    <th>
+                        <a th:href="@{/devices(sortBy='warrantyPeriod',direction=${sortBy=='warrantyPeriod' and direction=='asc' ? 'desc':'asc'})}">
+                            Warranty Period
+                        </a>
+                    </th>
+
+
+                    <th>
+                        <a th:href="@{/devices(sortBy='licenseRenewalDate',direction=${sortBy=='licenseRenewalDate' and direction=='asc' ? 'desc':'asc'})}">
+                            License Renewal Date
+                        </a>
+                    </th>
+
+
+                    <th>
+                        <a th:href="@{/devices(sortBy='warrantyExpiryDate',direction=${sortBy=='warrantyExpiryDate' and direction=='asc' ? 'desc':'asc'})}">
+                            Warranty Expiry Date
+                        </a>
+                    </th>
+
+
+                    <th>
+                        <a th:href="@{/devices(sortBy='modelNumber',direction=${sortBy=='modelNumber' and direction=='asc' ? 'desc':'asc'})}">
+                            Model No.
+                        </a>
+                    </th>
+
+
+                    <th>
+                        <a th:href="@{/devices(sortBy='invoiceNumber',direction=${sortBy=='invoiceNumber' and direction=='asc' ? 'desc':'asc'})}">
+                            Invoice No.
+                        </a>
+                    </th>
+
+
+                    <th>
+                        <a th:href="@{/devices(sortBy='invoiceDate',direction=${sortBy=='invoiceDate' and direction=='asc' ? 'desc':'asc'})}">
+                            Invoice Date
+                        </a>
+                    </th>
+
+
+                    <th>
+                        <a th:href="@{/devices(sortBy='assetAge',direction=${sortBy=='assetAge' and direction=='asc' ? 'desc':'asc'})}">
+                            Asset Age
+                        </a>
+                    </th>
+
+
+                    <th>
+                        <a th:href="@{/devices(sortBy='assetLocation',direction=${sortBy=='assetLocation' and direction=='asc' ? 'desc':'asc'})}">
+                            Asset Location
+                        </a>
+                    </th>
+
+
+                    <th>
+                        <a th:href="@{/devices(sortBy='assetCustodian',direction=${sortBy=='assetCustodian' and direction=='asc' ? 'desc':'asc'})}">
+                            Asset Custodian
+                        </a>
+                    </th>
+
+
+                    <th>
+                        <a th:href="@{/devices(sortBy='cost',direction=${sortBy=='cost' and direction=='asc' ? 'desc':'asc'})}">
+                            Cost
+                        </a>
+                    </th>
+
+
+                    <th>
+                        <a th:href="@{/devices(sortBy='available',direction=${sortBy=='available' and direction=='asc' ? 'desc':'asc'})}">
+                            Status
+                        </a>
+                    </th>
+
+
+                    <th>
+                        Actions
+                    </th>
+
+
+                    <th>
+                        <a th:href="@{/devices(sortBy='employee.employeeName',direction=${sortBy=='employee.employeeName' and direction=='asc' ? 'desc':'asc'})}">
+                            Assigned Employee
+                        </a>
+                    </th>
+
+
+                    <th>
+                        Employee ID
+                    </th>
+
+
+                    <th>
+                        <a th:href="@{/devices(sortBy='issueDate',direction=${sortBy=='issueDate' and direction=='asc' ? 'desc':'asc'})}">
+                            Issue Date
+                        </a>
+                    </th>
+
+
+                    <th>
+                        Image
+                    </th>
+
+
+                </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                <tr th:each="device : ${devices}">
+
+
+                    <td th:text="${device.id}">
+                    </td>
+
+
+                    <td th:text="${device.tagNumber}">
+                    </td>
+
+
+                    <td>
+
+                        <a
+                                th:href="@{/devices/{id}/history(id=${device.id})}"
+                                th:text="${device.deviceName}"
+                                class="device-name">
+
+                        </a>
+
+                    </td>
+
+
+                    <td th:text="${device.category}">
+                    </td>
+
+                    <td th:text="${device.purchaseSource}">
+                    </td>
+
+                    <td th:text="${device.serialNumber}">
+                    </td>
+
+
+                    <td th:text="${device.manufacturer}">
+                    </td>
+
+
+                    <td
+                            th:text="${device.assetPutUseDate != null ?
+                            #temporals.format(device.assetPutUseDate,'dd-MM-yyyy') : ''}">
+                    </td>
+
+
+                    <td
+                            th:text="${device.warrantyPeriod != null ?
+                            device.warrantyPeriod + ' Years' : ''}">
+                    </td>
+
+
+                    <td
+                            th:text="${device.licenseRenewalDate != null ?
+                            #temporals.format(device.licenseRenewalDate,'dd-MM-yyyy') : ''}">
+                    </td>
+
+
+                    <td
+                            th:text="${device.warrantyExpiryDate != null ?
+                            #temporals.format(device.warrantyExpiryDate,'dd-MM-yyyy') : ''}">
+                    </td>
+
+
+                    <td th:text="${device.modelNumber}">
+                    </td>
+
+
+                    <td th:text="${device.invoiceNumber}">
+                    </td>
+
+
+                    <td
+                            th:text="${device.invoiceDate != null ?
+                            #temporals.format(device.invoiceDate,'dd-MM-yyyy') : ''}">
+                    </td>
+
+
+                    <td
+                            th:text="${device.assetAge != null ?
+                            device.assetAge + ' Years' : ''}">
+                    </td>
+
+
+                    <td th:text="${device.assetLocation}">
+                    </td>
+
+
+                    <td th:text="${device.assetCustodian}">
+                    </td>
+
+
+                    <td th:text="${device.cost}">
+                    </td>
+
+
+                    <td>
+
+                        <span
+                                th:if="${device.available}"
+                                class="device-status status-available">
+
+                            Available
+
+                        </span>
+
+
+                        <span
+                                th:unless="${device.available}"
+                                class="device-status status-assigned">
+
+                            Assigned
+
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        <div class="device-actions-cell">
+
+
+                            <a
+                                    th:href="@{/devices/edit/{id}(id=${device.id})}"
+                                    class="table-action edit-action">
+
+                                Edit
+
+                            </a>
+
+
+                            <a
+                                    th:href="@{/devices/delete/{id}(id=${device.id})}"
+                                    class="table-action delete-action"
+                                    onclick="return confirm('Delete this device?')">
+
+                                Delete
+
+                            </a>
+
+
+                            <a
+                                    th:if="${device.employee != null}"
+                                    th:href="@{/return-device/{id}(id=${device.id})}"
+                                    class="table-action return-action">
+
+                                Return
+
+                            </a>
+
+
+                        </div>
+
+                    </td>
+
+
+                    <td
+                            th:text="${device.employee != null ?
+                            device.employee.employeeName :
+                            'Not Assigned'}">
+
+                    </td>
+
+
+                    <td
+                            th:text="${device.employee != null ?
+                            device.employee.employeeId :
+                            '-'}">
+
+                    </td>
+
+
+                    <td
+                            th:text="${device.issueDate != null ?
+                            device.issueDate :
+                            '-'}">
+
+                    </td>
+
+
+                    <td>
+
+                        <img
+                                class="device-image"
+
+                                th:if="${device.imageName != null}"
+
+                                th:src="@{'/uploads/' + ${device.imageName}}"
+
+                                alt="Device Image">
+
+                    </td>
+
+
+                </tr>
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+</main>
+
+
+<!-- =====================================================
+     JAVASCRIPT
+     ===================================================== -->
+
+<script>
+
+    function toggleCountryDropdown() {
+
+        const menu =
+            document.getElementById("countryMenu");
+
+        if (menu.style.display === "block") {
+
+            menu.style.display = "none";
+
+        } else {
+
+            menu.style.display = "block";
+
+        }
+
+    }
+
+
+    function selectCountry(selectedCheckbox) {
+
+        let checkboxes =
+            document.querySelectorAll(
+                "#countryMenu input[type='checkbox']"
+            );
+
+        checkboxes.forEach(function(checkbox) {
+
+            if (checkbox !== selectedCheckbox) {
+
+                checkbox.checked = false;
+
+            }
+
+        });
+
+
+        if (selectedCheckbox.checked) {
+
+            updateOfficeLocations(
+                selectedCheckbox.value
+            );
+
+        } else {
+
+            clearOfficeLocations();
+
+        }
+
+    }
+
+
+    const officeLocations = {
+
+        India: [
+            "Delhi",
+            "Mumbai",
+            "Bengaluru",
+            "Chennai"
+        ],
+
+        Nepal: [
+            "Kathmandu",
+            "Pokhara"
+        ],
+
+        Bangladesh: [
+            "Dhaka",
+            "Chattogram"
+        ]
+
+    };
+
+
+    function updateOfficeLocations(country) {
+
+        const officeDropdown =
+            document.getElementById(
+                "officeLocation"
+            );
+
+
+        officeDropdown.innerHTML =
+            '<option value="">Select Office</option>';
+
+
+        officeDropdown.disabled = false;
+
+
+        officeLocations[country].forEach(
+            function(location) {
+
+                let option =
+                    document.createElement("option");
+
+                option.value = location;
+
+                option.text = location;
+
+                officeDropdown.appendChild(option);
+
+            }
+        );
+
+
+        officeDropdown.onchange =
+            function() {
+
+                if (this.value !== "") {
+
+                    window.location.href =
+                        "/devices?country=" +
+                        encodeURIComponent(country) +
+                        "&officeLocation=" +
+                        encodeURIComponent(this.value);
+
+                }
+
+            };
+
+    }
+
+
+    function clearOfficeLocations() {
+
+        const officeDropdown =
+            document.getElementById(
+                "officeLocation"
+            );
+
+
+        officeDropdown.innerHTML =
+            '<option value="">Select Office</option>';
+
+
+        officeDropdown.disabled = true;
+
+    }
+
+
+    /* Close country dropdown when clicking elsewhere */
+
+    document.addEventListener(
+        "click",
+        function(event) {
+
+            const dropdown =
+                document.querySelector(
+                    ".country-dropdown"
+                );
+
+            const menu =
+                document.getElementById(
+                    "countryMenu"
+                );
+
+
+            if (
+                dropdown &&
+                !dropdown.contains(event.target)
+            ) {
+
+                menu.style.display = "none";
+
+            }
+
+        }
+    );
+
+</script>
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+
+</body>
+
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+<div th:fragment="navbar">
+
+    <nav class="main-navbar">
+
+        <div class="navbar-left">
+
+            <a th:href="@{/dashboard}"
+               class="nav-link">
+                Dashboard
+            </a>
+
+            <a th:href="@{/devices}"
+               class="nav-link">
+                Devices
+            </a>
+
+            <a th:href="@{/employees}"
+               class="nav-link">
+                Employees
+            </a>
+
+            <a th:href="@{/assign-device}"
+               class="nav-link">
+                Assign Device
+            </a>
+
+            <a th:href="@{/users}"
+               class="nav-link">
+                User Management
+            </a>
+
+        </div>
+
+        <a th:href="@{/logout}"
+           class="nav-link logout-link">
+            Logout
+        </a>
+
+    </nav>
+
+</div>
+
+</body>
+</html>

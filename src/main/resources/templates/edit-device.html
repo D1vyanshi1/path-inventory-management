@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <title>Edit Device | PATH Asset Management</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet"
+          th:href="@{/app.css}">
+
+    <style>
+
+        /* =====================================================
+           PAGE
+           ===================================================== */
+
+        .edit-device-page {
+
+            width: min(1400px, 94%);
+
+            margin: 0 auto;
+
+            padding: 35px 0 50px;
+        }
+
+
+        /* =====================================================
+           PAGE HEADER
+           ===================================================== */
+
+        .edit-device-header {
+
+            margin-bottom: 28px;
+        }
+
+        .edit-device-header h1 {
+
+            margin: 0;
+
+            color: #17365d;
+
+            font-size: 32px;
+
+            font-weight: 700;
+        }
+
+        .edit-device-header p {
+
+            margin: 8px 0 0;
+
+            color: #718096;
+
+            font-size: 15px;
+        }
+
+
+        /* =====================================================
+           MAIN LAYOUT
+           ===================================================== */
+
+        .device-edit-layout {
+
+            display: grid;
+
+            grid-template-columns: 360px 1fr;
+
+            gap: 28px;
+
+            align-items: stretch;
+        }
+
+
+        /* =====================================================
+           LEFT INFORMATION PANEL
+           ===================================================== */
+
+        .device-edit-info {
+
+            background: linear-gradient(
+                    145deg,
+                    #005eb8,
+                    #147dcc
+            );
+
+            border-radius: 14px;
+
+            padding: 38px;
+
+            color: white;
+
+            min-height: 720px;
+
+            box-sizing: border-box;
+
+            display: flex;
+
+            flex-direction: column;
+        }
+
+
+        .device-edit-info h2 {
+
+            margin: 0 0 15px;
+
+            font-size: 27px;
+
+            font-weight: 700;
+        }
+
+
+        .device-edit-info > p {
+
+            margin: 0;
+
+            font-size: 14px;
+
+            line-height: 1.7;
+
+            color: rgba(255,255,255,.9);
+        }
+
+
+        /* =====================================================
+           STEPS
+           ===================================================== */
+
+        .device-edit-steps {
+
+            margin-top: 38px;
+        }
+
+
+        .device-edit-step {
+
+            display: flex;
+
+            align-items: flex-start;
+
+            gap: 15px;
+
+            margin-bottom: 28px;
+        }
+
+
+        .step-number {
+
+            width: 38px;
+
+            height: 38px;
+
+            min-width: 38px;
+
+            border-radius: 50%;
+
+            border: 1px solid rgba(255,255,255,.45);
+
+            background: rgba(255,255,255,.12);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 15px;
+
+            font-weight: 700;
+        }
+
+
+        .step-content strong {
+
+            display: block;
+
+            font-size: 14px;
+
+            margin-bottom: 5px;
+        }
+
+
+        .step-content span {
+
+            display: block;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+
+            color: rgba(255,255,255,.82);
+        }
+
+
+        .device-edit-info-bottom {
+
+            margin-top: auto;
+
+            padding-top: 25px;
+
+            border-top: 1px solid rgba(255,255,255,.25);
+
+            font-size: 13px;
+
+            line-height: 1.6;
+
+            color: rgba(255,255,255,.85);
+        }
+
+
+        /* =====================================================
+           FORM CARD
+           ===================================================== */
+
+        .device-edit-card {
+
+            background: white;
+
+            border: 1px solid #dfe7f0;
+
+            border-radius: 14px;
+
+            padding: 38px 42px;
+
+            box-shadow:
+                    0 3px 12px rgba(20,50,80,.06);
+
+            box-sizing: border-box;
+        }
+
+
+        .device-edit-card h2 {
+
+            margin: 0;
+
+            color: #17365d;
+
+            font-size: 27px;
+
+            font-weight: 700;
+        }
+
+
+        .form-description {
+
+            margin: 7px 0 28px;
+
+            color: #718096;
+
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+           ERROR
+           ===================================================== */
+
+        .error {
+
+            background: #fdecec;
+
+            color: #b4232d;
+
+            border: 1px solid #f3c2c6;
+
+            padding: 12px 15px;
+
+            border-radius: 8px;
+
+            margin-bottom: 22px;
+
+            font-size: 13px;
+        }
+
+
+        /* =====================================================
+           FORM GRID
+           ===================================================== */
+
+        .form-grid {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            column-gap: 24px;
+
+            row-gap: 2px;
+        }
+
+
+        .form-group {
+
+            display: flex;
+
+            flex-direction: column;
+        }
+
+
+        .full-width {
+
+            grid-column: 1 / -1;
+        }
+
+
+        /* =====================================================
+           LABELS
+           ===================================================== */
+
+        .form-group label {
+
+            margin-bottom: 8px;
+
+            margin-top: 15px;
+
+            color: #17365d;
+
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+
+        /* =====================================================
+           INPUTS
+           ===================================================== */
+
+        .form-group input,
+        .form-group select {
+
+            width: 100%;
+
+            height: 44px;
+
+            box-sizing: border-box;
+
+            padding: 0 13px;
+
+            border: 1px solid #d5e0eb;
+
+            border-radius: 8px;
+
+            background: #ffffff;
+
+            color: #17365d;
+
+            font-size: 14px;
+
+            transition: .2s ease;
+        }
+
+
+        .form-group input:focus,
+        .form-group select:focus {
+
+            outline: none;
+
+            border-color: #1671c9;
+
+            box-shadow:
+                    0 0 0 3px rgba(22,113,201,.10);
+        }
+
+
+        /* =====================================================
+           READONLY FIELDS
+           ===================================================== */
+
+        .form-group input[readonly] {
+
+            background: #f5f8fb;
+
+            color: #65788c;
+
+            cursor: not-allowed;
+        }
+
+
+        /* =====================================================
+           FILE INPUT
+           ===================================================== */
+
+        .form-group input[type="file"] {
+
+            height: auto;
+
+            padding: 9px 11px;
+
+            cursor: pointer;
+        }
+
+
+        /* =====================================================
+           CURRENT IMAGE
+           ===================================================== */
+
+        .current-image {
+
+            margin-top: 25px;
+
+            padding: 20px;
+
+            border: 1px solid #e1e8ef;
+
+            border-radius: 10px;
+
+            background: #f8fafc;
+
+            text-align: center;
+        }
+
+
+        .current-image p {
+
+            margin: 0 0 12px;
+
+            color: #17365d;
+
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+
+        .current-image img {
+
+            width: 150px;
+
+            height: 150px;
+
+            object-fit: cover;
+
+            border-radius: 12px;
+
+            border: 1px solid #d5e0eb;
+
+            box-shadow:
+                    0 4px 10px rgba(0,0,0,.08);
+        }
+
+
+        /* =====================================================
+           UPDATE BUTTON
+           ===================================================== */
+
+        .update-device-btn {
+
+            width: 100%;
+
+            height: 46px;
+
+            margin-top: 27px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #0066bd;
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: .2s ease;
+        }
+
+
+        .update-device-btn:hover {
+
+            background: #00549d;
+
+            transform: translateY(-1px);
+
+            box-shadow:
+                    0 4px 10px rgba(0,94,184,.18);
+        }
+
+
+        /* =====================================================
+           BACK BUTTON
+           ===================================================== */
+
+        .back-btn {
+
+            display: block;
+
+            text-align: center;
+
+            margin-top: 18px;
+
+            color: #0066bd;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            text-decoration: none;
+        }
+
+
+        .back-btn:hover {
+
+            text-decoration: underline;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+           ===================================================== */
+
+        @media (max-width: 950px) {
+
+            .device-edit-layout {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .device-edit-info {
+
+                min-height: auto;
+            }
+
+
+            .device-edit-info-bottom {
+
+                margin-top: 30px;
+            }
+        }
+
+
+        @media (max-width: 650px) {
+
+            .edit-device-page {
+
+                width: 94%;
+
+                padding-top: 25px;
+            }
+
+
+            .device-edit-card {
+
+                padding: 28px 22px;
+            }
+
+
+            .form-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .full-width {
+
+                grid-column: auto;
+            }
+
+
+            .device-edit-info {
+
+                padding: 28px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     HEADER
+     ===================================================== -->
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+
+<!-- =====================================================
+     NAVBAR
+     ===================================================== -->
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+<main class="edit-device-page">
+
+
+    <!-- =================================================
+         PAGE HEADER
+         ================================================= -->
+
+    <div class="edit-device-header">
+
+        <h1>
+            Edit Device
+        </h1>
+
+        <p>
+            Update and maintain asset information
+        </p>
+
+    </div>
+
+
+    <!-- =================================================
+         MAIN CONTENT
+         ================================================= -->
+
+    <div class="device-edit-layout">
+
+
+        <!-- =================================================
+             LEFT INFORMATION PANEL
+             ================================================= -->
+
+        <div class="device-edit-info">
+
+
+            <h2>
+                Device Profile
+            </h2>
+
+
+            <p>
+                Update the asset information below.
+                Changes will be reflected throughout
+                the inventory system.
+            </p>
+
+
+            <div class="device-edit-steps">
+
+
+                <!-- STEP 1 -->
+
+                <div class="device-edit-step">
+
+                    <div class="step-number">
+                        1
+                    </div>
+
+                    <div class="step-content">
+
+                        <strong>
+                            Device Details
+                        </strong>
+
+                        <span>
+                            Update the product name,
+                            category and manufacturer.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STEP 2 -->
+
+                <div class="device-edit-step">
+
+                    <div class="step-number">
+                        2
+                    </div>
+
+                    <div class="step-content">
+
+                        <strong>
+                            Asset Identification
+                        </strong>
+
+                        <span>
+                            Maintain serial number,
+                            model and asset details.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STEP 3 -->
+
+                <div class="device-edit-step">
+
+                    <div class="step-number">
+                        3
+                    </div>
+
+                    <div class="step-content">
+
+                        <strong>
+                            Warranty & License
+                        </strong>
+
+                        <span>
+                            Update warranty and
+                            license renewal information.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STEP 4 -->
+
+                <div class="device-edit-step">
+
+                    <div class="step-number">
+                        4
+                    </div>
+
+                    <div class="step-content">
+
+                        <strong>
+                            Asset Information
+                        </strong>
+
+                        <span>
+                            Update invoice, location,
+                            custodian and cost details.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STEP 5 -->
+
+                <div class="device-edit-step">
+
+                    <div class="step-number">
+                        5
+                    </div>
+
+                    <div class="step-content">
+
+                        <strong>
+                            Device Image
+                        </strong>
+
+                        <span>
+                            Replace the existing device
+                            image when required.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="device-edit-info-bottom">
+
+                Make sure the asset information is accurate
+                before saving your changes.
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =================================================
+             FORM CARD
+             ================================================= -->
+
+        <div class="device-edit-card">
+
+
+            <h2>
+                Device Information
+            </h2>
+
+
+            <p class="form-description">
+                Update the details below and save your changes.
+            </p>
+
+
+            <!-- ERROR -->
+
+            <div
+                    th:if="${param.error}"
+                    class="error">
+
+                Serial Number already exists!
+
+            </div>
+
+
+            <form
+                    th:action="@{/devices/update}"
+                    th:object="${device}"
+                    method="post"
+                    enctype="multipart/form-data">
+
+
+                <!-- Hidden fields -->
+
+                <input
+                        type="hidden"
+                        th:field="*{id}">
+
+                <input
+                        type="hidden"
+                        th:field="*{tagNumber}">
+
+                <input
+                        type="hidden"
+                        th:field="*{issueDate}">
+
+
+                <div class="form-grid">
+
+
+                    <!-- PRODUCT NAME -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Product Name
+                        </label>
+
+                        <input
+                                type="text"
+                                th:field="*{deviceName}"
+                                required>
+
+                    </div>
+
+
+                    <!-- CATEGORY -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Asset Category
+                        </label>
+
+                        <select
+                                th:field="*{category}">
+
+                            <option value="">
+                                -- Select Asset Category --
+                            </option>
+
+                            <option value="Furniture & Fixture">
+                                Furniture & Fixture
+                            </option>
+
+                            <option value="Office Equipment">
+                                Office Equipment
+                            </option>
+
+                            <option value="Computer & Software">
+                                Computer & Software
+                            </option>
+
+                            <option value="Vehicle">
+                                Vehicle
+                            </option>
+
+                            <option value="Lease Hold Improvement">
+                                Lease Hold Improvement
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <!-- PURCHASE SOURCE -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Purchase Source
+                        </label>
+
+                        <select
+                                th:field="*{purchaseSource}"
+                                required>
+
+                            <option value="">
+                                -- Select Purchase Source --
+                            </option>
+
+                            <option value="Local">
+                                Local
+                            </option>
+
+                            <option value="HQ">
+                                HQ
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <!-- SERIAL NUMBER -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Serial Number
+                        </label>
+
+                        <input
+                                type="text"
+                                th:field="*{serialNumber}"
+                                required>
+
+                    </div>
+
+
+                    <!-- MANUFACTURER -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Manufacturer
+                        </label>
+
+                        <input
+                                type="text"
+                                th:field="*{manufacturer}"
+                                required>
+
+                    </div>
+
+
+                    <!-- ASSET PUT USE DATE -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Asset Put Use Date
+                        </label>
+
+                        <input
+                                id="assetPutUseDate"
+                                type="date"
+                                th:field="*{assetPutUseDate}"
+                                oninput="calculateWarrantyExpiry()">
+
+                    </div>
+
+
+                    <!-- WARRANTY PERIOD -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Warranty Period (Years)
+                        </label>
+
+                        <input
+                                id="warrantyPeriod"
+                                type="number"
+                                th:field="*{warrantyPeriod}"
+                                min="0"
+                                oninput="calculateWarrantyExpiry()"
+                                required>
+
+                    </div>
+
+
+                    <!-- LICENSE RENEWAL -->
+
+                    <div class="form-group">
+
+                        <label>
+                            License Renewal Date
+                        </label>
+
+                        <input
+                                type="date"
+                                name="licenseRenewalDate"
+                                class="form-control">
+
+                    </div>
+
+
+                    <!-- WARRANTY EXPIRY -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Warranty Expiry Date
+                        </label>
+
+                        <input
+                                id="warrantyExpiryDate"
+                                type="date"
+                                th:field="*{warrantyExpiryDate}"
+                                readonly>
+
+                    </div>
+
+
+                    <!-- MODEL NUMBER -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Model No.
+                        </label>
+
+                        <input
+                                type="text"
+                                th:field="*{modelNumber}"
+                                required>
+
+                    </div>
+
+
+                    <!-- INVOICE NUMBER -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Invoice No.
+                        </label>
+
+                        <input
+                                type="text"
+                                th:field="*{invoiceNumber}"
+                                required>
+
+                    </div>
+
+
+                    <!-- INVOICE DATE -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Invoice Date
+                        </label>
+
+                        <input
+                                type="date"
+                                th:field="*{invoiceDate}"
+                                required>
+
+                    </div>
+
+
+                    <!-- ASSET LOCATION -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Asset Location
+                        </label>
+
+                        <input
+                                type="text"
+                                th:field="*{assetLocation}"
+                                required>
+
+                    </div>
+
+
+                    <!-- ASSET CUSTODIAN -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Asset Custodian
+                        </label>
+
+                        <input
+                                type="text"
+                                th:field="*{assetCustodian}"
+                                required>
+
+                    </div>
+
+
+                    <!-- COST -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Cost
+                        </label>
+
+                        <input
+                                id="cost"
+                                type="number"
+                                th:field="*{cost}"
+                                step="0.01"
+                                min="0"
+                                required>
+
+                    </div>
+
+                    <!-- USEFUL LIFE -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Useful Life (Years)
+                        </label>
+
+                        <input
+                                type="number"
+                                th:field="*{usefulLife}"
+                                min="1"
+                                placeholder="Enter useful life in years"
+                                required>
+
+                    </div>
+
+                    <!-- DEVICE IMAGE -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Change Device Image
+                        </label>
+
+                        <input
+                                type="file"
+                                name="image"
+                                accept="image/*">
+
+                    </div>
+
+
+                    <!-- CURRENT IMAGE -->
+
+                    <div
+                            class="current-image full-width"
+                            th:if="${device.imageName != null}">
+
+                        <p>
+                            Current Image
+                        </p>
+
+                        <img
+                                th:src="@{'/uploads/' + ${device.imageName}}"
+                                alt="Device Image">
+
+                    </div>
+
+
+                    <!-- UPDATE BUTTON -->
+
+                    <div class="full-width">
+
+                        <button
+                                type="submit"
+                                class="update-device-btn">
+
+                            Update Device
+
+                        </button>
+
+                    </div>
+
+
+                </div>
+
+            </form>
+
+
+            <!-- BACK -->
+
+            <a
+                    th:href="@{/devices}"
+                    class="back-btn">
+
+                ← Back to Devices
+
+            </a>
+
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<!-- FOOTER -->
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+
+<!-- =====================================================
+     WARRANTY CALCULATION
+     ===================================================== -->
+
+<script>
+
+    function calculateWarrantyExpiry() {
+
+        let putUseDate =
+            document.getElementById(
+                "assetPutUseDate"
+            ).value;
+
+
+        let years =
+            parseInt(
+                document.getElementById(
+                    "warrantyPeriod"
+                ).value
+            );
+
+
+        if (
+            putUseDate &&
+            !isNaN(years)
+        ) {
+
+            let date =
+                new Date(putUseDate);
+
+
+            date.setFullYear(
+                date.getFullYear() + years
+            );
+
+
+            document.getElementById(
+                "warrantyExpiryDate"
+            ).value =
+                date.toISOString().split('T')[0];
+
+        }
+
+    }
+
+
+    window.onload = function () {
+
+        calculateWarrantyExpiry();
+
+    };
+
+</script>
+
+
+</body>
+
+</html>

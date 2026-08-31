@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <title>Add Device | PATH Asset Management</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet"
+          th:href="@{/app.css}">
+
+    <style>
+
+        /* =====================================================
+           PAGE
+           ===================================================== */
+
+        .add-device-page {
+
+            width: min(1400px, 94%);
+
+            margin: 0 auto;
+
+            padding: 35px 0 50px;
+        }
+
+
+        /* =====================================================
+           PAGE HEADER
+           ===================================================== */
+
+        .add-device-header {
+
+            margin-bottom: 28px;
+        }
+
+        .add-device-header h1 {
+
+            margin: 0;
+
+            color: #17365d;
+
+            font-size: 32px;
+
+            font-weight: 700;
+        }
+
+        .add-device-header p {
+
+            margin: 8px 0 0;
+
+            color: #718096;
+
+            font-size: 15px;
+        }
+
+
+        /* =====================================================
+           MAIN LAYOUT
+           ===================================================== */
+
+        .device-form-layout {
+
+            display: grid;
+
+            grid-template-columns: 360px 1fr;
+
+            gap: 28px;
+
+            align-items: stretch;
+        }
+
+
+        /* =====================================================
+           LEFT INFORMATION PANEL
+           ===================================================== */
+
+        .device-info-panel {
+
+            background: linear-gradient(
+                    145deg,
+                    #005eb8,
+                    #147dcc
+            );
+
+            border-radius: 14px;
+
+            padding: 38px;
+
+            color: white;
+
+            min-height: 720px;
+
+            box-sizing: border-box;
+
+            display: flex;
+
+            flex-direction: column;
+        }
+
+
+        .device-info-panel h2 {
+
+            margin: 0 0 15px;
+
+            font-size: 27px;
+
+            font-weight: 700;
+        }
+
+
+        .device-info-panel > p {
+
+            margin: 0;
+
+            font-size: 14px;
+
+            line-height: 1.7;
+
+            color: rgba(255,255,255,.9);
+        }
+
+
+        /* =====================================================
+           STEPS
+           ===================================================== */
+
+        .device-steps {
+
+            margin-top: 38px;
+        }
+
+
+        .device-step {
+
+            display: flex;
+
+            align-items: flex-start;
+
+            gap: 15px;
+
+            margin-bottom: 28px;
+        }
+
+
+        .step-number {
+
+            width: 38px;
+
+            height: 38px;
+
+            min-width: 38px;
+
+            border-radius: 50%;
+
+            border: 1px solid rgba(255,255,255,.45);
+
+            background: rgba(255,255,255,.12);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 15px;
+
+            font-weight: 700;
+        }
+
+
+        .step-content strong {
+
+            display: block;
+
+            font-size: 14px;
+
+            margin-bottom: 5px;
+        }
+
+
+        .step-content span {
+
+            display: block;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+
+            color: rgba(255,255,255,.82);
+        }
+
+
+        .device-info-bottom {
+
+            margin-top: auto;
+
+            padding-top: 25px;
+
+            border-top: 1px solid rgba(255,255,255,.25);
+
+            font-size: 13px;
+
+            line-height: 1.6;
+
+            color: rgba(255,255,255,.85);
+        }
+
+
+        /* =====================================================
+           FORM CARD
+           ===================================================== */
+
+        .device-form-card {
+
+            background: white;
+
+            border: 1px solid #dfe7f0;
+
+            border-radius: 14px;
+
+            padding: 38px 42px;
+
+            box-shadow:
+                    0 3px 12px rgba(20,50,80,.06);
+
+            box-sizing: border-box;
+        }
+
+
+        .device-form-card h2 {
+
+            margin: 0;
+
+            color: #17365d;
+
+            font-size: 27px;
+
+            font-weight: 700;
+        }
+
+
+        .form-description {
+
+            margin: 7px 0 28px;
+
+            color: #718096;
+
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+           ERROR
+           ===================================================== */
+
+        .error {
+
+            background: #fdecec;
+
+            color: #b4232d;
+
+            border: 1px solid #f3c2c6;
+
+            padding: 12px 15px;
+
+            border-radius: 8px;
+
+            margin-bottom: 22px;
+
+            font-size: 13px;
+        }
+
+
+        /* =====================================================
+           FORM GRID
+           ===================================================== */
+
+        .form-grid {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            column-gap: 24px;
+
+            row-gap: 2px;
+        }
+
+
+        .form-group {
+
+            display: flex;
+
+            flex-direction: column;
+        }
+
+
+        .full-width {
+
+            grid-column: 1 / -1;
+        }
+
+
+        /* =====================================================
+           LABELS
+           ===================================================== */
+
+        .form-group label {
+
+            margin-bottom: 8px;
+
+            margin-top: 15px;
+
+            color: #17365d;
+
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+
+        /* =====================================================
+           INPUTS
+           ===================================================== */
+
+        .form-group input,
+        .form-group select {
+
+            width: 100%;
+
+            height: 44px;
+
+            box-sizing: border-box;
+
+            padding: 0 13px;
+
+            border: 1px solid #d5e0eb;
+
+            border-radius: 8px;
+
+            background: #ffffff;
+
+            color: #17365d;
+
+            font-size: 14px;
+
+            transition: .2s ease;
+        }
+
+
+        .form-group input:focus,
+        .form-group select:focus {
+
+            outline: none;
+
+            border-color: #1671c9;
+
+            box-shadow:
+                    0 0 0 3px rgba(22,113,201,.10);
+        }
+
+
+        /* =====================================================
+           READONLY FIELDS
+           ===================================================== */
+
+        .form-group input[readonly] {
+
+            background: #f5f8fb;
+
+            color: #65788c;
+
+            cursor: not-allowed;
+        }
+
+
+        /* =====================================================
+           FILE INPUT
+           ===================================================== */
+
+        .form-group input[type="file"] {
+
+            height: auto;
+
+            padding: 9px 11px;
+
+            cursor: pointer;
+        }
+
+
+        /* =====================================================
+           SAVE BUTTON
+           ===================================================== */
+
+        .save-device-btn {
+
+            width: 100%;
+
+            height: 46px;
+
+            margin-top: 27px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #0066bd;
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: .2s ease;
+        }
+
+
+        .save-device-btn:hover {
+
+            background: #00549d;
+
+            transform: translateY(-1px);
+
+            box-shadow:
+                    0 4px 10px rgba(0,94,184,.18);
+        }
+
+
+        /* =====================================================
+           BACK BUTTON
+           ===================================================== */
+
+        .back-btn {
+
+            display: block;
+
+            text-align: center;
+
+            margin-top: 18px;
+
+            color: #0066bd;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            text-decoration: none;
+        }
+
+
+        .back-btn:hover {
+
+            text-decoration: underline;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+           ===================================================== */
+
+        @media (max-width: 950px) {
+
+            .device-form-layout {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .device-info-panel {
+
+                min-height: auto;
+            }
+
+
+            .device-info-bottom {
+
+                margin-top: 30px;
+            }
+        }
+
+
+        @media (max-width: 650px) {
+
+            .add-device-page {
+
+                width: 94%;
+
+                padding-top: 25px;
+            }
+
+
+            .device-form-card {
+
+                padding: 28px 22px;
+            }
+
+
+            .form-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .full-width {
+
+                grid-column: auto;
+            }
+
+
+            .device-info-panel {
+
+                padding: 28px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     HEADER
+     ===================================================== -->
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+
+<!-- =====================================================
+     NAVBAR
+     ===================================================== -->
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+<main class="add-device-page">
+
+
+    <!-- =================================================
+         PAGE HEADER
+         ================================================= -->
+
+    <div class="add-device-header">
+
+        <h1>
+            Add Device
+        </h1>
+
+        <p>
+            Add and register a new organizational asset
+        </p>
+
+    </div>
+
+
+    <!-- =================================================
+         MAIN CONTENT
+         ================================================= -->
+
+    <div class="device-form-layout">
+
+
+        <!-- =================================================
+             LEFT INFORMATION PANEL
+             ================================================= -->
+
+        <div class="device-info-panel">
+
+
+            <h2>
+                Device Registration
+            </h2>
+
+
+            <p>
+                Add the device details below to register
+                the asset in the inventory system.
+            </p>
+
+
+            <div class="device-steps">
+
+
+                <!-- STEP 1 -->
+
+                <div class="device-step">
+
+                    <div class="step-number">
+                        1
+                    </div>
+
+                    <div class="step-content">
+
+                        <strong>
+                            Device Details
+                        </strong>
+
+                        <span>
+                            Enter the product name,
+                            category and manufacturer.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STEP 2 -->
+
+                <div class="device-step">
+
+                    <div class="step-number">
+                        2
+                    </div>
+
+                    <div class="step-content">
+
+                        <strong>
+                            Asset Identification
+                        </strong>
+
+                        <span>
+                            Add the serial number,
+                            tag number and model details.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STEP 3 -->
+
+                <div class="device-step">
+
+                    <div class="step-number">
+                        3
+                    </div>
+
+                    <div class="step-content">
+
+                        <strong>
+                            Warranty & License
+                        </strong>
+
+                        <span>
+                            Record warranty information
+                            and license renewal details.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STEP 4 -->
+
+                <div class="device-step">
+
+                    <div class="step-number">
+                        4
+                    </div>
+
+                    <div class="step-content">
+
+                        <strong>
+                            Asset Information
+                        </strong>
+
+                        <span>
+                            Add invoice, location,
+                            custodian and cost details.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STEP 5 -->
+
+                <div class="device-step">
+
+                    <div class="step-number">
+                        5
+                    </div>
+
+                    <div class="step-content">
+
+                        <strong>
+                            Device Image
+                        </strong>
+
+                        <span>
+                            Upload an image to make
+                            the asset easier to identify.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="device-info-bottom">
+
+                Once saved, the device will appear in
+                the inventory and can be assigned to
+                an employee.
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =================================================
+             FORM CARD
+             ================================================= -->
+
+        <div class="device-form-card">
+
+
+            <h2>
+                Device Information
+            </h2>
+
+
+            <p class="form-description">
+                Enter the details below to register a new device.
+            </p>
+
+
+            <!-- ERROR -->
+
+            <div
+                    th:if="${param.error}"
+                    class="error">
+
+                Serial Number already exists!
+
+            </div>
+
+
+            <form
+                    th:action="@{/devices/save}"
+                    th:object="${device}"
+                    method="post"
+                    enctype="multipart/form-data">
+
+
+                <div class="form-grid">
+
+
+                    <!-- =================================================
+                         PRODUCT NAME
+                         ================================================= -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Product Name
+                        </label>
+
+                        <input
+                                type="text"
+                                th:field="*{deviceName}"
+                                placeholder="Enter product name"
+                                required>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         CATEGORY
+                         ================================================= -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Asset Category
+                        </label>
+
+                        <select
+                                th:field="*{category}"
+                                required>
+
+                            <option value="">
+                                -- Select Asset Category --
+                            </option>
+
+                            <option value="Furniture & Fixture">
+                                Furniture & Fixture
+                            </option>
+
+                            <option value="Office Equipment">
+                                Office Equipment
+                            </option>
+
+                            <option value="Computer & Software">
+                                Computer & Software
+                            </option>
+
+                            <option value="Vehicle">
+                                Vehicle
+                            </option>
+
+                            <option value="Lease Hold Improvement">
+                                Lease Hold Improvement
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <!-- =================================================
+                             PURCHASE SOURCE
+                             ================================================= -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Purchase Source
+                        </label>
+
+                        <select
+                                th:field="*{purchaseSource}"
+                                required>
+
+                            <option value="">
+                                -- Select Purchase Source --
+                            </option>
+
+                            <option value="Local">
+                                Local
+                            </option>
+
+                            <option value="HQ">
+                                HQ
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         SERIAL NUMBER
+                         ================================================= -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Serial Number
+                        </label>
+
+                        <input
+                                type="text"
+                                th:field="*{serialNumber}"
+                                placeholder="Enter serial number"
+                                required>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         MANUFACTURER
+                         ================================================= -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Manufacturer
+                        </label>
+
+                        <input
+                                type="text"
+                                th:field="*{manufacturer}"
+                                placeholder="Enter manufacturer"
+                                required>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         ASSET PUT USE DATE
+                         ================================================= -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Asset Put Use Date
+                        </label>
+
+                        <input
+                                id="assetPutUseDate"
+                                type="date"
+                                th:field="*{assetPutUseDate}"
+                                oninput="calculateWarrantyExpiry()">
+
+                    </div>
+
+
+                    <!-- =================================================
+                         WARRANTY PERIOD
+                         ================================================= -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Warranty Period (Years)
+                        </label>
+
+                        <input
+                                id="warrantyPeriod"
+                                type="number"
+                                th:field="*{warrantyPeriod}"
+                                min="0"
+                                placeholder="Enter warranty period"
+                                oninput="calculateWarrantyExpiry()"
+                                required>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         LICENSE RENEWAL
+                         ================================================= -->
+
+                    <div class="form-group">
+
+                        <label>
+                            License Renewal Date
+                        </label>
+
+                        <input
+                                type="date"
+                                name="licenseRenewalDate">
+
+                    </div>
+
+
+                    <!-- =================================================
+                         WARRANTY EXPIRY
+                         ================================================= -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Warranty Expiry Date
+                        </label>
+
+                        <input
+                                id="warrantyExpiryDate"
+                                type="date"
+                                th:field="*{warrantyExpiryDate}"
+                                readonly>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         MODEL NUMBER
+                         ================================================= -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Model No.
+                        </label>
+
+                        <input
+                                type="text"
+                                th:field="*{modelNumber}"
+                                placeholder="Enter model number"
+                                required>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         INVOICE NUMBER
+                         ================================================= -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Invoice No.
+                        </label>
+
+                        <input
+                                type="text"
+                                th:field="*{invoiceNumber}"
+                                placeholder="Enter invoice number"
+                                required>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         INVOICE DATE
+                         ================================================= -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Invoice Date
+                        </label>
+
+                        <input
+                                type="date"
+                                th:field="*{invoiceDate}"
+                                required>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         ASSET AGE
+                         ================================================= -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Asset Age (Years)
+                        </label>
+
+                        <input
+                                type="number"
+                                th:field="*{assetAge}"
+                                placeholder="Calculated automatically"
+                                readonly>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>
+                            Useful Life (Years)
+                        </label>
+
+                        <input
+                                type="number"
+                                th:field="*{usefulLife}"
+                                min="1"
+                                placeholder="Enter useful life in years"
+                                required>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         ASSET LOCATION
+                         ================================================= -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Asset Location
+                        </label>
+
+                        <input
+                                type="text"
+                                th:field="*{assetLocation}"
+                                placeholder="Enter asset location"
+                                required>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         ASSET CUSTODIAN
+                         ================================================= -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Asset Custodian
+                        </label>
+
+                        <input
+                                type="text"
+                                th:field="*{assetCustodian}"
+                                placeholder="Enter asset custodian"
+                                required>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         COST
+                         ================================================= -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Cost
+                        </label>
+
+                        <input
+                                id="cost"
+                                type="number"
+                                th:field="*{cost}"
+                                step="0.01"
+                                min="0"
+                                placeholder="Enter device cost"
+                                required>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         DEVICE IMAGE
+                         ================================================= -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Device Image
+                        </label>
+
+                        <input
+                                type="file"
+                                name="image"
+                                accept="image/*">
+
+                    </div>
+
+
+                    <!-- =================================================
+                         SAVE
+                         ================================================= -->
+
+                    <div class="full-width">
+
+                        <button
+                                type="submit"
+                                class="save-device-btn">
+
+                            Save Device
+
+                        </button>
+
+                    </div>
+
+
+                </div>
+
+            </form>
+
+
+            <!-- BACK -->
+
+            <a
+                    th:href="@{/devices}"
+                    class="back-btn">
+
+                ← Back to Devices
+
+            </a>
+
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<!-- =====================================================
+     FOOTER
+     ===================================================== -->
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+
+<!-- =====================================================
+     WARRANTY CALCULATION
+     ===================================================== -->
+
+<script>
+
+    function calculateWarrantyExpiry() {
+
+        let putUseDate =
+            document.getElementById(
+                "assetPutUseDate"
+            ).value;
+
+
+        let years =
+            parseInt(
+                document.getElementById(
+                    "warrantyPeriod"
+                ).value
+            );
+
+
+        if (
+            putUseDate &&
+            !isNaN(years)
+        ) {
+
+            let date =
+                new Date(putUseDate);
+
+
+            date.setFullYear(
+                date.getFullYear() + years
+            );
+
+
+            document.getElementById(
+                "warrantyExpiryDate"
+            ).value =
+                date.toISOString().split('T')[0];
+
+        }
+
+    }
+
+
+    window.onload = function () {
+
+        calculateWarrantyExpiry();
+
+    };
+
+</script>
+
+
+</body>
+
+</html>

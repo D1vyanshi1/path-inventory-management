@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <title>Verify OTP</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <style>
+
+        *{
+            box-sizing:border-box;
+            font-family:"Segoe UI",Arial,sans-serif;
+        }
+
+        body{
+
+            margin:0;
+
+            min-height:100vh;
+
+            display:flex;
+
+            justify-content:center;
+
+            align-items:center;
+
+            background:
+                    linear-gradient(
+                            135deg,
+                            #edf3fb,
+                            #dfeaf7
+                    );
+
+        }
+
+
+        .otp-card{
+
+            width:420px;
+
+            background:white;
+
+            padding:42px;
+
+            border-radius:20px;
+
+            box-shadow:
+                    0 15px 45px
+                    rgba(0,0,0,.15);
+
+            text-align:center;
+
+        }
+
+
+        .otp-icon{
+
+            width:70px;
+
+            height:70px;
+
+            margin:0 auto 20px;
+
+            border-radius:50%;
+
+            background:#e3f2fd;
+
+            display:flex;
+
+            align-items:center;
+
+            justify-content:center;
+
+            font-size:32px;
+
+        }
+
+
+        h2{
+
+            margin:0 0 12px;
+
+            color:#1d3557;
+
+            font-size:30px;
+
+        }
+
+
+        .description{
+
+            color:#777;
+
+            line-height:1.6;
+
+            margin-bottom:25px;
+
+        }
+
+
+        .email{
+
+            color:#1976d2;
+
+            font-weight:600;
+
+        }
+
+
+        .otp-input{
+
+            width:100%;
+
+            height:55px;
+
+            border:1px solid #d5dce5;
+
+            border-radius:10px;
+
+            text-align:center;
+
+            font-size:25px;
+
+            letter-spacing:8px;
+
+            font-weight:600;
+
+            margin-bottom:18px;
+
+        }
+
+
+        .otp-input:focus{
+
+            outline:none;
+
+            border-color:#1976d2;
+
+            box-shadow:
+                    0 0 10px
+                    rgba(25,118,210,.18);
+
+        }
+
+
+        .verify-btn{
+
+            width:100%;
+
+            height:52px;
+
+            border:none;
+
+            border-radius:10px;
+
+            background:#1976d2;
+
+            color:white;
+
+            font-size:17px;
+
+            font-weight:600;
+
+            cursor:pointer;
+
+        }
+
+
+        .verify-btn:hover{
+
+            background:#1565c0;
+
+        }
+
+
+        .resend-form{
+
+            margin-top:18px;
+
+        }
+
+
+        .resend-btn{
+
+            border:none;
+
+            background:none;
+
+            color:#1976d2;
+
+            font-size:15px;
+
+            font-weight:600;
+
+            cursor:pointer;
+
+        }
+
+
+        .resend-btn:hover{
+
+            text-decoration:underline;
+
+        }
+
+
+        .back-link{
+
+            display:block;
+
+            margin-top:20px;
+
+            color:#777;
+
+            text-decoration:none;
+
+            font-size:14px;
+
+        }
+
+
+        .back-link:hover{
+
+            color:#1976d2;
+
+        }
+
+
+        .error{
+
+            background:#fdecec;
+
+            color:#b42318;
+
+            padding:12px;
+
+            border-radius:8px;
+
+            margin-bottom:18px;
+
+            font-size:14px;
+
+        }
+
+
+        .success{
+
+            background:#e8f5e9;
+
+            color:#2e7d32;
+
+            padding:12px;
+
+            border-radius:8px;
+
+            margin-bottom:18px;
+
+            font-size:14px;
+
+        }
+
+
+        @media(max-width:500px){
+
+            .otp-card{
+
+                width:90%;
+
+                padding:30px 25px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="otp-card">
+
+
+    <div class="otp-icon">
+        🔐
+    </div>
+
+
+    <h2>
+        Verify Your Login
+    </h2>
+
+
+    <p class="description">
+
+        We've sent a 6-digit verification code
+        to your registered email address.
+
+        <br><br>
+
+        <span class="email"
+              th:text="${email}">
+        </span>
+
+    </p>
+
+
+    <!-- ERROR -->
+
+    <div class="error"
+         th:if="${error}"
+         th:text="${error}">
+    </div>
+
+
+    <!-- SUCCESS -->
+
+    <div class="success"
+         th:if="${success}"
+         th:text="${success}">
+    </div>
+
+
+    <!-- VERIFY OTP -->
+
+    <form th:action="@{/verify-login-otp}"
+          method="post">
+
+
+        <input
+
+                type="text"
+
+                name="otp"
+
+                class="otp-input"
+
+                placeholder="000000"
+
+                maxlength="6"
+
+                inputmode="numeric"
+
+                pattern="[0-9]{6}"
+
+                autocomplete="one-time-code"
+
+                required>
+
+
+        <button
+                type="submit"
+                class="verify-btn">
+
+            Verify OTP
+
+        </button>
+
+
+    </form>
+
+
+    <!-- RESEND -->
+
+    <form
+            th:action="@{/resend-login-otp}"
+            method="post"
+            class="resend-form">
+
+        <button
+                type="submit"
+                class="resend-btn">
+
+            Resend OTP
+
+        </button>
+
+    </form>
+
+
+    <a
+            th:href="@{/login}"
+            class="back-link">
+
+        ← Back to Login
+
+    </a>
+
+
+</div>
+
+
+</body>
+
+</html>

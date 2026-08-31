@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <link rel="stylesheet"
+          th:href="@{/app.css}">
+
+    <title>User Management</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #173b68;
+        }
+
+
+        /* =========================
+           HEADER
+           ========================= */
+
+        .page-header-bar {
+            background: #ffffff;
+            height: 82px;
+
+            display: flex;
+            align-items: center;
+
+            padding: 0 40px;
+
+            border-bottom: 1px solid #e1e8f0;
+        }
+
+        .page-header-left {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .page-header-left img {
+            width: 58px;
+            height: auto;
+        }
+
+        .page-header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #173b68;
+        }
+
+
+        /* =========================
+           NAVBAR
+           ========================= */
+
+        .page-navbar {
+            height: 58px;
+
+            background: #ffffff;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 55px;
+
+            border-bottom: 1px solid #e1e8f0;
+        }
+
+        .page-navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 38px;
+        }
+
+        .page-navbar a {
+            color: #53677f;
+            text-decoration: none;
+
+            font-size: 16px;
+            font-weight: 500;
+
+            transition: 0.2s;
+        }
+
+        .page-navbar a:hover {
+            color: #0875d1;
+        }
+
+        .logout-link {
+            color: #e53935 !important;
+        }
+
+
+        /* =========================
+           MAIN CONTENT
+           ========================= */
+
+        .users-page {
+            padding: 38px 46px 50px;
+
+            min-height: calc(100vh - 140px);
+        }
+
+        .content-header {
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            margin-bottom: 26px;
+        }
+
+        .content-title {
+            margin: 0;
+
+            font-size: 34px;
+            line-height: 1.2;
+
+            color: #173b68;
+
+            font-weight: 700;
+        }
+
+        .content-subtitle {
+            margin: 8px 0 0;
+
+            font-size: 16px;
+
+            color: #7184a0;
+        }
+
+
+        /* =========================
+           ADD USER BUTTON
+           ========================= */
+
+        .add-user-btn {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 13px 23px;
+
+            background: #0875d1;
+            color: #ffffff;
+
+            border-radius: 8px;
+
+            text-decoration: none;
+
+            font-size: 15px;
+            font-weight: 700;
+
+            white-space: nowrap;
+
+            transition: 0.2s;
+        }
+
+        .add-user-btn:hover {
+            background: #0667ba;
+        }
+
+
+        /* =========================
+           TABLE CONTAINER
+           ========================= */
+
+        .table-container {
+            width: 100%;
+
+            background: #ffffff;
+
+            border: 1px solid #dfe7f0;
+
+            border-radius: 14px;
+
+            overflow: hidden;
+
+            box-shadow: 0 3px 12px rgba(31, 66, 104, 0.05);
+        }
+
+
+        /* =========================
+           TABLE
+           ========================= */
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f7faff;
+        }
+
+        th {
+            padding: 17px 15px;
+
+            color: #173b68;
+
+            font-size: 14px;
+            font-weight: 700;
+
+            text-align: center;
+
+            border-bottom: 1px solid #dfe7f0;
+
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 18px 15px;
+
+            color: #53677f;
+
+            font-size: 14px;
+
+            text-align: center;
+            vertical-align: middle;
+
+            border-bottom: 1px solid #edf1f5;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: #fbfdff;
+        }
+
+
+        /* =========================
+           USER ID
+           ========================= */
+
+        .user-id {
+            color: #53677f;
+        }
+
+
+        /* =========================
+           USERNAME
+           ========================= */
+
+        .username {
+            color: #173b68;
+
+            font-weight: 700;
+        }
+
+
+        /* =========================
+           ROLE BADGES
+           ========================= */
+
+        .role-badge {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 7px 16px;
+
+            border-radius: 20px;
+
+            font-size: 13px;
+            font-weight: 700;
+
+            white-space: nowrap;
+        }
+
+        .role-admin {
+            background: #e7f0ff;
+            color: #0875d1;
+        }
+
+        .role-category {
+            background: #eef1f4;
+            color: #536273;
+        }
+
+        .role-viewer {
+            background: #eef1f4;
+            color: #536273;
+        }
+
+
+        /* =========================
+           STATUS BADGES
+           ========================= */
+
+        .status-badge {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 7px 16px;
+
+            border-radius: 20px;
+
+            font-size: 13px;
+            font-weight: 700;
+
+            white-space: nowrap;
+        }
+
+        .status-enabled {
+            background: #e3f5ec;
+            color: #16834f;
+        }
+
+        .status-disabled {
+            background: #fde8e8;
+            color: #d33b3b;
+        }
+
+
+        /* =========================
+           ACTION BUTTONS
+           ========================= */
+
+        .action-btn {
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            min-width: 64px;
+
+            padding: 8px 14px;
+
+            border-radius: 7px;
+
+            text-decoration: none;
+
+            font-size: 13px;
+            font-weight: 700;
+
+            margin: 2px;
+
+            transition: 0.2s;
+        }
+
+        .edit-btn {
+            background: #e6f0ff;
+            color: #0875d1;
+        }
+
+        .edit-btn:hover {
+            background: #d9e9ff;
+        }
+
+        .delete-btn {
+            background: #fde7e7;
+            color: #d83434;
+        }
+
+        .delete-btn:hover {
+            background: #f9d7d7;
+        }
+
+
+        /* =========================
+           FOOTER
+           ========================= */
+
+        .page-footer {
+            background: #ffffff;
+
+            border-top: 1px solid #e1e8f0;
+
+            text-align: center;
+
+            padding: 18px;
+
+            color: #7184a0;
+
+            font-size: 13px;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+           ========================= */
+
+        @media (max-width: 900px) {
+
+            .page-header-bar {
+                padding: 0 25px;
+            }
+
+            .page-navbar {
+                padding: 0 25px;
+            }
+
+            .page-navbar-left {
+                gap: 20px;
+            }
+
+            .users-page {
+                padding: 30px 25px 45px;
+            }
+
+            .content-title {
+                font-size: 30px;
+            }
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            .content-header {
+                flex-direction: column;
+
+                align-items: flex-start;
+
+                gap: 20px;
+            }
+
+            .page-navbar {
+                height: auto;
+
+                padding: 15px 25px;
+
+                flex-direction: column;
+
+                align-items: flex-start;
+
+                gap: 15px;
+            }
+
+            .page-navbar-left {
+                flex-wrap: wrap;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 800px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     HEADER
+     ========================= -->
+
+<div class="page-header-bar">
+
+    <div class="page-header-left">
+
+        <img th:src="@{/images/path-logo.png}"
+             alt="PATH Logo">
+
+        <div class="page-header-title">
+            PATH Asset Management System
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     NAVBAR
+     ========================= -->
+
+<nav class="page-navbar">
+
+    <div class="page-navbar-left">
+
+        <a th:href="@{/dashboard}">
+            Dashboard
+        </a>
+
+        <a th:href="@{/devices}">
+            Devices
+        </a>
+
+        <a th:href="@{/employees}">
+            Employees
+        </a>
+
+        <a th:href="@{/assign-device}">
+            Assign Device
+        </a>
+
+        <a th:href="@{/users}">
+            User Management
+        </a>
+
+    </div>
+
+
+    <div>
+
+        <a th:href="@{/logout}"
+           class="logout-link">
+
+            Logout
+
+        </a>
+
+    </div>
+
+</nav>
+
+
+<!-- =========================
+     USER MANAGEMENT
+     ========================= -->
+
+<main class="users-page">
+
+
+    <div class="content-header">
+
+        <div>
+
+            <h1 class="content-title">
+                User Management
+            </h1>
+
+            <p class="content-subtitle">
+                Manage system users, roles and account access
+            </p>
+
+        </div>
+
+
+        <a th:href="@{/users/add}"
+           class="add-user-btn">
+
+            + Add User
+
+        </a>
+
+    </div>
+
+
+    <!-- =========================
+         TABLE
+         ========================= -->
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+            <tr>
+
+                <th>S.No.</th>
+
+                <th>User ID</th>
+
+                <th>Username</th>
+
+                <th>Role</th>
+
+                <th>Status</th>
+
+                <th>Actions</th>
+
+            </tr>
+
+            </thead>
+
+
+            <tbody>
+
+            <tr th:each="user, stat : ${users}">
+
+
+                <td th:text="${stat.count}">
+                </td>
+
+
+                <td class="user-id"
+                    th:text="${user.userId}">
+                </td>
+
+
+                <td>
+
+                    <span class="username"
+                          th:text="${user.username}">
+                    </span>
+
+                </td>
+
+
+                <td>
+
+                    <span th:if="${user.role == 'ROLE_ADMIN'}"
+                          class="role-badge role-admin">
+
+                        Admin
+
+                    </span>
+
+
+                    <span th:if="${user.role == 'ROLE_CATEGORY_USER'}"
+                          class="role-badge role-category">
+
+                        Category User
+
+                    </span>
+
+
+                    <span th:if="${user.role == 'ROLE_VIEWER'}"
+                          class="role-badge role-viewer">
+
+                        Viewer
+
+                    </span>
+
+                </td>
+
+
+                <td>
+
+                    <span th:if="${user.enabled}"
+                          class="status-badge status-enabled">
+
+                        Enabled
+
+                    </span>
+
+
+                    <span th:unless="${user.enabled}"
+                          class="status-badge status-disabled">
+
+                        Disabled
+
+                    </span>
+
+                </td>
+
+
+                <td>
+
+                    <a th:href="@{/users/edit/{id}(id=${user.id})}"
+                       class="action-btn edit-btn">
+
+                        Edit
+
+                    </a>
+
+
+                    <a th:href="@{/users/delete/{id}(id=${user.id})}"
+                       class="action-btn delete-btn"
+
+                       onclick="return confirm('Delete this user?')">
+
+                        Delete
+
+                    </a>
+
+                </td>
+
+
+            </tr>
+
+
+            <tr th:if="${#lists.isEmpty(users)}">
+
+                <td colspan="6"
+                    style="padding:40px;
+                           text-align:center;
+                           color:#7184a0;">
+
+                    No users found.
+
+                </td>
+
+            </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+</main>
+
+
+<!-- =========================
+     FOOTER
+     ========================= -->
+
+<footer class="page-footer">
+
+    PATH Asset Management System
+
+</footer>
+
+
+</body>
+
+</html>

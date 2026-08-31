@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <title>Physical Verification | PATH Asset Management</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet"
+          th:href="@{/app.css}">
+
+    <style>
+
+        .verification-page {
+            width: min(1400px, 94%);
+            margin: 0 auto;
+            padding: 32px 0 50px;
+        }
+
+        .verification-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .verification-header h1 {
+            margin: 0;
+            color: #17365d;
+            font-size: 30px;
+            font-weight: 700;
+        }
+
+        .verification-header p {
+            margin: 7px 0 0;
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 42px;
+            padding: 0 17px;
+            border-radius: 8px;
+            text-decoration: none;
+            background: #f1f4f7;
+            color: #526274;
+            border: 1px solid #dfe7f0;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .back-button:hover {
+            background: #e7ecf1;
+            color: #526274;
+            text-decoration: none;
+        }
+
+        .verification-card {
+            background: #ffffff;
+            border: 1px solid #dfe7f0;
+            border-radius: 14px;
+            box-shadow: 0 3px 12px rgba(20, 50, 80, .06);
+            overflow: hidden;
+        }
+
+        .verification-table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .verification-table {
+            width: 100%;
+            min-width: 900px;
+            border-collapse: collapse;
+        }
+
+        .verification-table th {
+            padding: 14px 13px;
+            background: #f5f8fc;
+            border-bottom: 1px solid #dfe7f0;
+            color: #17365d;
+            font-size: 12px;
+            font-weight: 700;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .verification-table td {
+            padding: 14px 13px;
+            border-bottom: 1px solid #edf1f5;
+            color: #526274;
+            font-size: 13px;
+            text-align: center;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        .verification-table tbody tr:hover {
+            background: #f7fbff;
+        }
+
+        .verification-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .device-name {
+            color: #005eb8;
+            font-weight: 600;
+        }
+
+        .verify-form {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .date-input {
+            height: 36px;
+            padding: 0 8px;
+            border: 1px solid #d6e0eb;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #526274;
+        }
+
+        .condition-select {
+            height: 36px;
+            padding: 0 8px;
+            border: 1px solid #d6e0eb;
+            border-radius: 6px;
+            background: white;
+            font-size: 12px;
+            color: #526274;
+        }
+
+        .save-verification {
+            height: 36px;
+            padding: 0 12px;
+            border: none;
+            border-radius: 6px;
+            background: #005eb8;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .save-verification:hover {
+            background: #004b93;
+        }
+
+        .condition-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .working {
+            background: #e8f7ef;
+            color: #147a45;
+        }
+
+        .not-working {
+            background: #fdecec;
+            color: #b4232d;
+        }
+
+        .not-verified {
+            background: #f1f4f7;
+            color: #718096;
+        }
+
+        @media (max-width: 800px) {
+
+            .verification-page {
+                width: 94%;
+                padding-top: 24px;
+            }
+
+            .verification-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+<main class="verification-page">
+
+    <div class="verification-header">
+
+        <div>
+
+            <h1>
+                Physical Verification
+            </h1>
+
+            <p>
+                Record the physical verification date and condition of each device
+            </p>
+
+        </div>
+
+        <a th:href="@{/devices}"
+           class="back-button">
+
+            ← Back to Devices
+
+        </a>
+
+    </div>
+
+
+    <div class="verification-card">
+
+        <div class="verification-table-container">
+
+            <table class="verification-table">
+
+                <thead>
+
+                <tr>
+
+                    <th>S.No.</th>
+
+                    <th>Tag Number</th>
+
+                    <th>Device</th>
+
+                    <th>Category</th>
+
+                    <th>Serial Number</th>
+
+                    <th>Location</th>
+
+                    <th>Last Verification</th>
+
+                    <th>Condition</th>
+
+                    <th>Physical Verification</th>
+
+                </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                <tr th:each="device, stat : ${devices}">
+
+                    <td th:text="${stat.count}">
+                    </td>
+
+
+                    <td th:text="${device.tagNumber}">
+                    </td>
+
+
+                    <td class="device-name"
+                        th:text="${device.deviceName}">
+                    </td>
+
+
+                    <td th:text="${device.category}">
+                    </td>
+
+
+                    <td th:text="${device.serialNumber}">
+                    </td>
+
+
+                    <td th:text="${device.assetLocation}">
+                    </td>
+
+
+                    <td>
+
+                        <span
+                                th:if="${device.physicalVerificationDate != null}"
+                                th:text="${#temporals.format(device.physicalVerificationDate,'dd-MM-yyyy')}">
+                        </span>
+
+                        <span
+                                th:unless="${device.physicalVerificationDate != null}">
+                            Not Verified
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        <span
+                                th:if="${device.physicalCondition == 'Working'}"
+                                class="condition-badge working">
+
+                            Working
+
+                        </span>
+
+
+                        <span
+                                th:if="${device.physicalCondition == 'Not Working'}"
+                                class="condition-badge not-working">
+
+                            Not Working
+
+                        </span>
+
+
+                        <span
+                                th:if="${device.physicalCondition == null or device.physicalCondition == ''}"
+                                class="condition-badge not-verified">
+
+                            Not Verified
+
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        <form
+                                th:action="@{/devices/physical-verification/{id}(id=${device.id})}"
+                                method="post"
+                                class="verify-form">
+
+                            <input
+                                    type="date"
+                                    name="physicalVerificationDate"
+                                    class="date-input"
+                                    th:value="${device.physicalVerificationDate}"
+                                    required>
+
+
+                            <select
+                                    name="physicalCondition"
+                                    class="condition-select"
+                                    required>
+
+                                <option value="">
+                                    Select
+                                </option>
+
+                                <option
+                                        value="Working"
+                                        th:selected="${device.physicalCondition == 'Working'}">
+
+                                    Working
+
+                                </option>
+
+                                <option
+                                        value="Not Working"
+                                        th:selected="${device.physicalCondition == 'Not Working'}">
+
+                                    Not Working
+
+                                </option>
+
+                            </select>
+
+
+                            <button
+                                    type="submit"
+                                    class="save-verification">
+
+                                Save
+
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+
+                <tr th:if="${#lists.isEmpty(devices)}">
+
+                    <td colspan="9">
+
+                        No devices found.
+
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+
+</html>

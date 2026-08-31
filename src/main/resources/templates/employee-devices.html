@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <title>Employee Devices | PATH Asset Management</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet"
+          th:href="@{/app.css}">
+
+    <style>
+
+        /* =====================================================
+           PAGE
+           ===================================================== */
+
+        .employee-devices-page {
+
+            width: min(1400px, 94%);
+
+            margin: 0 auto;
+
+            padding: 35px 0 50px;
+        }
+
+
+        /* =====================================================
+           PAGE HEADER
+           ===================================================== */
+
+        .employee-header {
+
+            margin-bottom: 25px;
+        }
+
+
+        .employee-header h1 {
+
+            margin: 0;
+
+            color: #17365d;
+
+            font-size: 32px;
+
+            font-weight: 700;
+        }
+
+
+        .employee-header p {
+
+            margin: 8px 0 0;
+
+            color: #718096;
+
+            font-size: 15px;
+        }
+
+
+        /* =====================================================
+           BACK BUTTON
+           ===================================================== */
+
+        .back-btn {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            padding: 9px 16px;
+
+            margin-bottom: 22px;
+
+            border-radius: 7px;
+
+            background: #f1f6fb;
+
+            color: #0066bd;
+
+            text-decoration: none;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            border: 1px solid #dce7f1;
+
+            transition: .2s ease;
+        }
+
+
+        .back-btn:hover {
+
+            background: #e7f1fa;
+
+            color: #00549d;
+        }
+
+
+        /* =====================================================
+           EMPLOYEE DETAILS CARD
+           ===================================================== */
+
+        .employee-details-card {
+
+            background: white;
+
+            border: 1px solid #dfe7f0;
+
+            border-radius: 14px;
+
+            padding: 28px 30px;
+
+            margin-bottom: 30px;
+
+            box-shadow:
+                    0 3px 12px rgba(20,50,80,.06);
+        }
+
+
+        .employee-details-card h2 {
+
+            margin: 0 0 22px;
+
+            color: #17365d;
+
+            font-size: 22px;
+
+            font-weight: 700;
+        }
+
+
+        /* =====================================================
+           DETAILS GRID
+           ===================================================== */
+
+        .employee-details-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                    repeat(4, 1fr);
+
+            gap: 20px;
+
+        }
+
+
+        .detail-item {
+
+            padding: 15px;
+
+            background: #f8fafc;
+
+            border: 1px solid #e5ebf1;
+
+            border-radius: 9px;
+        }
+
+
+        .detail-label {
+
+            display: block;
+
+            margin-bottom: 6px;
+
+            color: #8493a3;
+
+            font-size: 11px;
+
+            font-weight: 600;
+
+            text-transform: uppercase;
+
+            letter-spacing: .4px;
+        }
+
+
+        .detail-value {
+
+            display: block;
+
+            color: #243b53;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            word-break: break-word;
+        }
+
+
+        /* =====================================================
+           DEVICES SECTION
+           ===================================================== */
+
+        .devices-section-header {
+
+            margin-bottom: 18px;
+        }
+
+
+        .devices-section-header h2 {
+
+            margin: 0;
+
+            color: #17365d;
+
+            font-size: 23px;
+
+            font-weight: 700;
+        }
+
+
+        .devices-section-header p {
+
+            margin: 6px 0 0;
+
+            color: #7b8a9a;
+
+            font-size: 13px;
+        }
+
+
+        /* =====================================================
+           TABLE CONTAINER
+           ===================================================== */
+
+        .table-container {
+
+            width: 100%;
+
+            overflow-x: auto;
+
+            background: white;
+
+            border: 1px solid #dfe7f0;
+
+            border-radius: 12px;
+
+            box-shadow:
+                    0 3px 12px rgba(20,50,80,.05);
+        }
+
+
+        table {
+
+            width: 100%;
+
+            min-width: 1000px;
+
+            border-collapse: collapse;
+        }
+
+
+        /* =====================================================
+           TABLE HEADER
+           ===================================================== */
+
+        th {
+
+            padding: 14px 16px;
+
+            background: #f4f8fc;
+
+            color: #4c6278;
+
+            border-bottom: 1px solid #dce5ee;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            text-align: center;
+
+            white-space: nowrap;
+        }
+
+
+        /* =====================================================
+           TABLE DATA
+           ===================================================== */
+
+        td {
+
+            padding: 14px 16px;
+
+            color: #44566c;
+
+            border-bottom: 1px solid #edf1f5;
+
+            font-size: 13px;
+
+            text-align: center;
+
+            white-space: nowrap;
+        }
+
+
+        tbody tr {
+
+            transition: .15s ease;
+        }
+
+
+        tbody tr:hover {
+
+            background: #f8fbfe;
+        }
+
+
+        tbody tr:last-child td {
+
+            border-bottom: none;
+        }
+
+
+        /* =====================================================
+           DEVICE NAME
+           ===================================================== */
+
+        .device-name {
+
+            color: #0066bd;
+
+            font-weight: 600;
+        }
+
+
+        /* =====================================================
+           AVAILABILITY BADGES
+           ===================================================== */
+
+        .availability-badge {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 6px 12px;
+
+            border-radius: 20px;
+
+            font-size: 11px;
+
+            font-weight: 700;
+        }
+
+
+        .available {
+
+            background: #e7f6ee;
+
+            color: #167347;
+        }
+
+
+        .assigned {
+
+            background: #fff4df;
+
+            color: #a15c00;
+        }
+
+
+        /* =====================================================
+           EMPTY STATE
+           ===================================================== */
+
+        .empty-state {
+
+            padding: 45px 20px;
+
+            text-align: center;
+
+            color: #7b8a9a;
+
+            font-size: 14px;
+        }
+
+
+        .empty-state strong {
+
+            display: block;
+
+            margin-bottom: 6px;
+
+            color: #4c6278;
+
+            font-size: 16px;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+           ===================================================== */
+
+        @media (max-width: 1000px) {
+
+            .employee-details-grid {
+
+                grid-template-columns:
+                        repeat(2, 1fr);
+            }
+        }
+
+
+        @media (max-width: 650px) {
+
+            .employee-devices-page {
+
+                width: 94%;
+
+                padding-top: 25px;
+            }
+
+
+            .employee-header h1 {
+
+                font-size: 27px;
+            }
+
+
+            .employee-details-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .employee-details-card {
+
+                padding: 22px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     HEADER
+     ===================================================== -->
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+
+<!-- =====================================================
+     NAVBAR
+     ===================================================== -->
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+<main class="employee-devices-page">
+
+
+    <!-- =================================================
+         PAGE HEADER
+         ================================================= -->
+
+    <div class="employee-header">
+
+        <h1>
+            Employee Devices
+        </h1>
+
+        <p>
+            View the assets currently associated with this employee
+        </p>
+
+    </div>
+
+
+    <!-- BACK -->
+
+    <a
+            th:href="@{/employees}"
+            class="back-btn">
+
+        ← Back to Employees
+
+    </a>
+
+
+    <!-- =================================================
+         EMPLOYEE DETAILS
+         ================================================= -->
+
+    <div class="employee-details-card">
+
+
+        <h2>
+            Employee Details
+        </h2>
+
+
+        <div class="employee-details-grid">
+
+
+            <!-- NAME -->
+
+            <div class="detail-item">
+
+                <span class="detail-label">
+                    Employee Name
+                </span>
+
+                <span
+                        class="detail-value"
+                        th:text="${employee.employeeName}">
+                </span>
+
+            </div>
+
+
+            <!-- EMPLOYEE ID -->
+
+            <div class="detail-item">
+
+                <span class="detail-label">
+                    Employee ID
+                </span>
+
+                <span
+                        class="detail-value"
+                        th:text="${employee.employeeId}">
+                </span>
+
+            </div>
+
+
+            <!-- DEPARTMENT -->
+
+            <div class="detail-item">
+
+                <span class="detail-label">
+                    Department
+                </span>
+
+                <span
+                        class="detail-value"
+                        th:text="${employee.department}">
+                </span>
+
+            </div>
+
+
+            <!-- EMAIL -->
+
+            <div class="detail-item">
+
+                <span class="detail-label">
+                    Email
+                </span>
+
+                <span
+                        class="detail-value"
+                        th:text="${employee.email}">
+                </span>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================================
+         DEVICES SECTION
+         ================================================= -->
+
+    <div class="devices-section-header">
+
+        <h2>
+            Allocated Devices
+        </h2>
+
+        <p>
+            Devices currently associated with this employee
+        </p>
+
+    </div>
+
+
+    <!-- =================================================
+         DEVICE TABLE
+         ================================================= -->
+
+    <div class="table-container">
+
+
+        <table>
+
+
+            <thead>
+
+            <tr>
+
+                <th>
+                    S.No.
+                </th>
+
+                <th>
+                    Tag Number
+                </th>
+
+                <th>
+                    Device
+                </th>
+
+                <th>
+                    Category
+                </th>
+
+                <th>
+                    Asset Location
+                </th>
+
+                <th>
+                    Serial Number
+                </th>
+
+                <th>
+                    Manufacturer
+                </th>
+
+                <th>
+                    Issue Date
+                </th>
+
+                <th>
+                    Status
+                </th>
+
+            </tr>
+
+            </thead>
+
+
+            <tbody>
+
+
+            <tr
+                    th:each="device : ${devices}">
+
+
+                <td
+                        th:text="${device.id}">
+                </td>
+
+
+                <td
+                        th:text="${device.tagNumber}">
+                </td>
+
+
+                <td class="device-name"
+                    th:text="${device.deviceName}">
+                </td>
+
+
+                <td
+                        th:text="${device.category}">
+                </td>
+
+                <td
+                        th:text="${device.assetLocation}">
+                </td>
+
+                <td
+                        th:text="${device.serialNumber}">
+                </td>
+
+
+                <td
+                        th:text="${device.manufacturer}">
+                </td>
+
+
+                <td
+                        th:text="${device.issueDate}">
+                </td>
+
+
+                <!-- STATUS -->
+
+                <td>
+
+                    <span
+                            th:if="${device.available}"
+                            class="availability-badge available">
+
+                        Available
+
+                    </span>
+
+
+                    <span
+                            th:unless="${device.available}"
+                            class="availability-badge assigned">
+
+                        Assigned
+
+                    </span>
+
+                </td>
+
+
+            </tr>
+
+
+            <!-- EMPTY STATE -->
+
+            <tr
+                    th:if="${#lists.isEmpty(devices)}">
+
+                <td
+                        colspan="9"
+                        class="empty-state">
+
+                    <strong>
+                        No Devices Assigned
+                    </strong>
+
+                    This employee currently has no devices
+                    associated with their profile.
+
+                </td>
+
+            </tr>
+
+
+            </tbody>
+
+
+        </table>
+
+
+    </div>
+
+
+</main>
+
+
+<!-- =====================================================
+     FOOTER
+     ===================================================== -->
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+
+</body>
+
+</html>

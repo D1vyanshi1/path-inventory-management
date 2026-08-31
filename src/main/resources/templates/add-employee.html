@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <title>Add Employee | PATH Asset Management</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet"
+          th:href="@{/app.css}">
+
+    <style>
+
+        /* =====================================================
+           PAGE
+           ===================================================== */
+
+        .add-employee-page {
+
+            width: min(1400px, 94%);
+
+            margin: 0 auto;
+
+            padding: 35px 0 50px;
+        }
+
+
+        /* =====================================================
+           PAGE HEADER
+           ===================================================== */
+
+        .add-employee-header {
+
+            margin-bottom: 28px;
+        }
+
+
+        .add-employee-header h1 {
+
+            margin: 0;
+
+            color: #17365d;
+
+            font-size: 32px;
+
+            font-weight: 700;
+        }
+
+
+        .add-employee-header p {
+
+            margin: 8px 0 0;
+
+            color: #718096;
+
+            font-size: 15px;
+        }
+
+
+        /* =====================================================
+           MAIN LAYOUT
+           ===================================================== */
+
+        .employee-form-layout {
+
+            display: grid;
+
+            grid-template-columns: 360px 1fr;
+
+            gap: 28px;
+
+            align-items: stretch;
+        }
+
+
+        /* =====================================================
+           LEFT INFORMATION PANEL
+           ===================================================== */
+
+        .employee-info-panel {
+
+            background: linear-gradient(
+                    145deg,
+                    #005eb8,
+                    #147dcc
+            );
+
+            border-radius: 14px;
+
+            padding: 38px;
+
+            color: white;
+
+            min-height: 600px;
+
+            box-sizing: border-box;
+
+            display: flex;
+
+            flex-direction: column;
+        }
+
+
+        .employee-info-panel h2 {
+
+            margin: 0 0 15px;
+
+            font-size: 27px;
+
+            font-weight: 700;
+        }
+
+
+        .employee-info-panel > p {
+
+            margin: 0;
+
+            font-size: 14px;
+
+            line-height: 1.7;
+
+            color: rgba(255,255,255,.9);
+        }
+
+
+        /* =====================================================
+           INFORMATION STEPS
+           ===================================================== */
+
+        .employee-steps {
+
+            margin-top: 38px;
+        }
+
+
+        .employee-step {
+
+            display: flex;
+
+            align-items: flex-start;
+
+            gap: 15px;
+
+            margin-bottom: 28px;
+        }
+
+
+        .step-number {
+
+            width: 38px;
+
+            height: 38px;
+
+            min-width: 38px;
+
+            border-radius: 50%;
+
+            border: 1px solid rgba(255,255,255,.45);
+
+            background: rgba(255,255,255,.12);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 15px;
+
+            font-weight: 700;
+        }
+
+
+        .step-content strong {
+
+            display: block;
+
+            font-size: 14px;
+
+            margin-bottom: 5px;
+        }
+
+
+        .step-content span {
+
+            display: block;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+
+            color: rgba(255,255,255,.82);
+        }
+
+
+        .employee-info-bottom {
+
+            margin-top: auto;
+
+            padding-top: 25px;
+
+            border-top: 1px solid rgba(255,255,255,.25);
+
+            font-size: 13px;
+
+            line-height: 1.6;
+
+            color: rgba(255,255,255,.85);
+        }
+
+
+        /* =====================================================
+           FORM CARD
+           ===================================================== */
+
+        .employee-form-card {
+
+            background: white;
+
+            border: 1px solid #dfe7f0;
+
+            border-radius: 14px;
+
+            padding: 38px 42px;
+
+            box-shadow:
+                    0 3px 12px rgba(20,50,80,.06);
+
+            box-sizing: border-box;
+        }
+
+
+        .employee-form-card h2 {
+
+            margin: 0;
+
+            color: #17365d;
+
+            font-size: 27px;
+
+            font-weight: 700;
+        }
+
+
+        .form-description {
+
+            margin: 7px 0 28px;
+
+            color: #718096;
+
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+           ERROR
+           ===================================================== */
+
+        .error {
+
+            background: #fdecec;
+
+            color: #b4232d;
+
+            border: 1px solid #f3c2c6;
+
+            padding: 12px 15px;
+
+            border-radius: 8px;
+
+            margin-bottom: 22px;
+
+            font-size: 13px;
+        }
+
+
+        /* =====================================================
+           FORM GRID
+           ===================================================== */
+
+        .form-grid {
+
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            column-gap: 24px;
+
+            row-gap: 2px;
+        }
+
+
+        .form-group {
+
+            display: flex;
+
+            flex-direction: column;
+        }
+
+
+        .full-width {
+
+            grid-column: 1 / -1;
+        }
+
+
+        /* =====================================================
+           LABELS
+           ===================================================== */
+
+        .form-group label {
+
+            margin-bottom: 8px;
+
+            margin-top: 15px;
+
+            color: #17365d;
+
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+
+        /* =====================================================
+           INPUTS
+           ===================================================== */
+
+        .form-group input,
+        .form-group select {
+
+            width: 100%;
+
+            height: 44px;
+
+            box-sizing: border-box;
+
+            padding: 0 13px;
+
+            border: 1px solid #d5e0eb;
+
+            border-radius: 8px;
+
+            background: #ffffff;
+
+            color: #17365d;
+
+            font-size: 14px;
+
+            transition: .2s ease;
+        }
+
+
+        .form-group input:focus,
+        .form-group select:focus {
+
+            outline: none;
+
+            border-color: #1671c9;
+
+            box-shadow:
+                    0 0 0 3px rgba(22,113,201,.10);
+        }
+
+
+        /* =====================================================
+           FILE INPUT
+           ===================================================== */
+
+        .form-group input[type="file"] {
+
+            height: auto;
+
+            padding: 9px 11px;
+
+            cursor: pointer;
+        }
+
+
+        /* =====================================================
+           SAVE BUTTON
+           ===================================================== */
+
+        .save-employee-btn {
+
+            width: 100%;
+
+            height: 46px;
+
+            margin-top: 27px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #0066bd;
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: .2s ease;
+        }
+
+
+        .save-employee-btn:hover {
+
+            background: #00549d;
+
+            transform: translateY(-1px);
+        }
+
+
+        /* =====================================================
+           BACK BUTTON
+           ===================================================== */
+
+        .back-btn {
+
+            display: block;
+
+            text-align: center;
+
+            margin-top: 18px;
+
+            color: #0066bd;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            text-decoration: none;
+        }
+
+
+        .back-btn:hover {
+
+            text-decoration: underline;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+           ===================================================== */
+
+        @media (max-width: 950px) {
+
+            .employee-form-layout {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .employee-info-panel {
+
+                min-height: auto;
+            }
+
+
+            .employee-info-bottom {
+
+                margin-top: 30px;
+            }
+        }
+
+
+        @media (max-width: 650px) {
+
+            .add-employee-page {
+
+                width: 94%;
+
+                padding-top: 25px;
+            }
+
+
+            .employee-form-card {
+
+                padding: 28px 22px;
+            }
+
+
+            .form-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .full-width {
+
+                grid-column: auto;
+            }
+
+
+            .employee-info-panel {
+
+                padding: 28px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     HEADER
+     ===================================================== -->
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+
+<!-- =====================================================
+     NAVBAR
+     ===================================================== -->
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+<main class="add-employee-page">
+
+
+    <!-- =================================================
+         PAGE HEADER
+         ================================================= -->
+
+    <div class="add-employee-header">
+
+        <h1>
+            Add Employee
+        </h1>
+
+        <p>
+            Add and manage employee information
+        </p>
+
+    </div>
+
+
+    <!-- =================================================
+         MAIN CONTENT
+         ================================================= -->
+
+    <div class="employee-form-layout">
+
+
+        <!-- =================================================
+             LEFT PANEL
+             ================================================= -->
+
+        <div class="employee-info-panel">
+
+            <h2>
+                Employee Setup
+            </h2>
+
+            <p>
+                Add the employee's details below to create
+                their profile in the asset management system.
+            </p>
+
+
+            <div class="employee-steps">
+
+
+                <div class="employee-step">
+
+                    <div class="step-number">
+                        1
+                    </div>
+
+                    <div class="step-content">
+
+                        <strong>
+                            Employee Details
+                        </strong>
+
+                        <span>
+                            Enter the employee name,
+                            ID and contact information.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="employee-step">
+
+                    <div class="step-number">
+                        2
+                    </div>
+
+                    <div class="step-content">
+
+                        <strong>
+                            Work Information
+                        </strong>
+
+                        <span>
+                            Add department, designation
+                            and office location.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="employee-step">
+
+                    <div class="step-number">
+                        3
+                    </div>
+
+                    <div class="step-content">
+
+                        <strong>
+                            Employee Profile
+                        </strong>
+
+                        <span>
+                            Optionally upload an employee
+                            profile image.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="employee-info-bottom">
+
+                The employee can be associated with
+                organizational assets after their profile
+                has been created.
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             FORM
+             ================================================= -->
+
+        <div class="employee-form-card">
+
+
+            <h2>
+                Employee Information
+            </h2>
+
+            <p class="form-description">
+                Enter the details below to add a new employee.
+            </p>
+
+
+            <!-- ERROR -->
+
+            <p th:if="${error}"
+               th:text="${error}"
+               class="error">
+            </p>
+
+
+            <form th:action="@{/employees/save}"
+                  th:object="${employee}"
+                  method="post"
+                  enctype="multipart/form-data">
+
+
+                <div class="form-grid">
+
+
+                    <!-- Employee Name -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Employee Name
+                        </label>
+
+                        <input
+                                type="text"
+                                th:field="*{employeeName}"
+                                placeholder="Enter employee name"
+                                required>
+
+                    </div>
+
+
+                    <!-- Employee ID -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Employee ID
+                        </label>
+
+                        <input
+                                type="text"
+                                th:field="*{employeeId}"
+                                placeholder="Enter employee ID"
+                                required>
+
+                    </div>
+
+
+                    <!-- Email -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Email
+                        </label>
+
+                        <input
+                                type="email"
+                                th:field="*{email}"
+                                placeholder="Enter email address"
+                                required>
+
+                    </div>
+
+
+                    <!-- Department -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Department
+                        </label>
+
+                        <input
+                                type="text"
+                                th:field="*{department}"
+                                placeholder="Enter department"
+                                required>
+
+                    </div>
+
+
+                    <!-- Designation -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Designation
+                        </label>
+
+                        <input
+                                type="text"
+                                th:field="*{designation}"
+                                placeholder="Enter designation"
+                                required>
+
+                    </div>
+
+
+                    <!-- Country -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Country
+                        </label>
+
+                        <select
+                                id="country"
+                                th:field="*{country}"
+                                onchange="updateOfficeLocations()">
+
+                            <option value="">
+                                Select Country
+                            </option>
+
+                            <option value="India">
+                                India
+                            </option>
+
+                            <option value="Nepal">
+                                Nepal
+                            </option>
+
+                            <option value="Bangladesh">
+                                Bangladesh
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Office Location -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Office Location
+                        </label>
+
+                        <select
+                                id="officeLocation"
+                                th:field="*{officeLocation}">
+
+                            <option value="">
+                                Select Office Location
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Employee Image -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Employee Image
+                        </label>
+
+                        <input
+                                type="file"
+                                name="imageFile"
+                                accept="image/*">
+
+                    </div>
+
+
+                    <!-- SAVE -->
+
+                    <div class="full-width">
+
+                        <button
+                                type="submit"
+                                class="save-employee-btn">
+
+                            Save Employee
+
+                        </button>
+
+                    </div>
+
+
+                </div>
+
+            </form>
+
+
+            <a th:href="@{/employees}"
+               class="back-btn">
+
+                ← Back to Employees
+
+            </a>
+
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<!-- =====================================================
+     FOOTER
+     ===================================================== -->
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+
+<script>
+
+    const officeLocations = {
+
+        India: [
+            "Delhi",
+            "Mumbai",
+            "Bengaluru",
+            "Chennai"
+        ],
+
+        Nepal: [
+            "Kathmandu",
+            "Pokhara"
+        ],
+
+        Bangladesh: [
+            "Dhaka",
+            "Chattogram"
+        ]
+
+    };
+
+
+    function updateOfficeLocations() {
+
+        const country =
+            document.getElementById("country").value;
+
+        const officeDropdown =
+            document.getElementById("officeLocation");
+
+
+        officeDropdown.innerHTML =
+            '<option value="">Select Office Location</option>';
+
+
+        if (country === "") {
+            return;
+        }
+
+
+        officeLocations[country].forEach(function(location) {
+
+            const option =
+                document.createElement("option");
+
+            option.value = location;
+
+            option.text = location;
+
+            officeDropdown.appendChild(option);
+
+        });
+
+    }
+
+</script>
+
+
+</body>
+
+</html>

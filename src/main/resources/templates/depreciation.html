@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <title>Depreciation | PATH Asset Management</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet"
+          th:href="@{/app.css}">
+
+    <style>
+
+        .depreciation-page {
+            width: min(1400px, 94%);
+            margin: 0 auto;
+            padding: 35px 0 50px;
+        }
+
+        .depreciation-header {
+            margin-bottom: 25px;
+        }
+
+        .depreciation-header h1 {
+            margin: 0;
+            color: #17365d;
+            font-size: 30px;
+            font-weight: 700;
+        }
+
+        .depreciation-header p {
+            margin: 7px 0 0;
+            color: #718096;
+            font-size: 14px;
+        }
+
+        .table-card {
+            background: white;
+            border: 1px solid #dfe7f0;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 3px 12px rgba(20,50,80,.06);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f5f8fb;
+            color: #17365d;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #dfe7f0;
+        }
+
+        td {
+            padding: 15px;
+            color: #526274;
+            font-size: 13px;
+            border-bottom: 1px solid #edf1f5;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .asset-name {
+            color: #17365d;
+            font-weight: 600;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 20px;
+            color: #0066bd;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .back-button:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+<main class="depreciation-page">
+
+    <div class="depreciation-header">
+
+        <h1>
+            Asset Depreciation
+        </h1>
+
+        <p>
+            View depreciation details of your assets
+        </p>
+
+    </div>
+
+
+    <div class="table-card">
+
+        <table>
+
+            <thead>
+            <tr>
+
+                <th>Asset</th>
+                <th>Tag Number</th>
+                <th>Cost</th>
+                <th>Useful Life</th>
+                <th>Put to Use Date</th>
+                <th>Accumulated Depreciation</th>
+                <th>Current Book Value</th>
+
+            </tr>
+            </thead>
+
+
+            <tbody>
+
+            <tr th:each="device : ${devices}">
+
+                <td class="asset-name"
+                    th:text="${device.deviceName}">
+                </td>
+
+                <td th:text="${device.tagNumber}">
+                </td>
+
+                <td>
+                    ₹<span th:text="${device.cost}"></span>
+                </td>
+
+                <td>
+                    <span th:text="${device.usefulLife}"></span>
+                    years
+                </td>
+
+                <td th:text="${device.assetPutUseDate}">
+                </td>
+
+                <td class="depreciation-value"
+                    th:attr="data-cost=${device.cost},
+                         data-life=${device.usefulLife},
+                         data-date=${device.assetPutUseDate}">
+
+                    ₹0.00
+
+                </td>
+
+                <td class="book-value">
+
+                    ₹0.00
+
+                </td>
+
+            </tr>
+
+
+            <tr th:if="${#lists.isEmpty(devices)}">
+
+                <td colspan="7"
+                    style="text-align:center; padding:30px;">
+
+                    No assets available.
+
+                </td>
+
+            </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <a th:href="@{/devices}"
+       class="back-button">
+
+        ← Back to Devices
+
+    </a>
+
+</main>
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script>
+
+    const depreciationCells =
+        document.querySelectorAll(
+            ".depreciation-value"
+        );
+
+
+    depreciationCells.forEach(cell => {
+
+        const cost =
+            parseFloat(
+                cell.dataset.cost
+            );
+
+        const usefulLife =
+            parseInt(
+                cell.dataset.life
+            );
+
+        const putUseDate =
+            cell.dataset.date;
+
+
+        if (
+            isNaN(cost) ||
+            isNaN(usefulLife) ||
+            !putUseDate ||
+            usefulLife <= 0
+        ) {
+            return;
+        }
+
+
+        /*
+         * Calculate number of months
+         * the asset has been in use.
+         */
+
+        const startDate =
+            new Date(putUseDate);
+
+        const today =
+            new Date();
+
+
+        let monthsUsed =
+            (today.getFullYear() -
+                startDate.getFullYear()) * 12
+            +
+            (today.getMonth() -
+                startDate.getMonth());
+
+
+        /*
+         * If the current day is before
+         * the starting day, don't count
+         * the incomplete month.
+         */
+
+        if (
+            today.getDate() <
+            startDate.getDate()
+        ) {
+
+            monthsUsed--;
+
+        }
+
+
+        if (monthsUsed < 0) {
+
+            monthsUsed = 0;
+
+        }
+
+
+        /*
+         * Useful life in months
+         */
+
+        const usefulLifeMonths =
+            usefulLife * 12;
+
+
+        /*
+         * Monthly depreciation
+         */
+
+        const monthlyDepreciation =
+            cost / usefulLifeMonths;
+
+
+        /*
+         * Accumulated depreciation
+         */
+
+        let accumulatedDepreciation =
+            monthlyDepreciation *
+            monthsUsed;
+
+
+        /*
+         * Depreciation cannot exceed
+         * the original asset cost.
+         */
+
+        if (
+            accumulatedDepreciation >
+            cost
+        ) {
+
+            accumulatedDepreciation =
+                cost;
+
+        }
+
+
+        /*
+         * Current book value
+         */
+
+        const currentBookValue =
+            cost -
+            accumulatedDepreciation;
+
+
+        /*
+         * Display accumulated depreciation
+         */
+
+        cell.innerText =
+            "₹" +
+            accumulatedDepreciation
+                .toFixed(2);
+
+
+        /*
+         * Display current book value
+         */
+
+        const bookValueCell =
+            cell
+                .closest("tr")
+                .querySelector(
+                    ".book-value"
+                );
+
+
+        bookValueCell.innerText =
+            "₹" +
+            currentBookValue
+                .toFixed(2);
+
+    });
+
+</script>
+
+</body>
+
+</html>

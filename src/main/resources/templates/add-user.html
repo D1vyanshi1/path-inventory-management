@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <title>Add User</title>
+
+    <!-- GLOBAL CSS -->
+    <link rel="stylesheet"
+          th:href="@{/app.css}">
+
+    <style>
+
+        /* =====================================================
+           ADD USER PAGE
+           ===================================================== */
+
+        .add-user-page {
+            background: #f4f7fb;
+            min-height: calc(100vh - 116px);
+            padding: 34px 0 50px;
+        }
+
+        .add-user-wrapper {
+            width: min(1400px, 92%);
+            margin: 0 auto;
+        }
+
+        /* Page heading */
+
+        .add-user-heading {
+            margin-bottom: 30px;
+        }
+
+        .add-user-heading h1 {
+            margin: 0;
+            color: #17365d;
+            font-size: 38px;
+            font-weight: 700;
+        }
+
+        .add-user-heading p {
+            margin: 8px 0 0;
+            color: #6b7a90;
+            font-size: 18px;
+        }
+
+
+        /* Main two-column layout */
+
+        .user-registration-layout {
+            display: grid;
+            grid-template-columns: 0.85fr 1.6fr;
+            gap: 32px;
+            align-items: stretch;
+        }
+
+
+        /* =====================================================
+           LEFT INFORMATION PANEL
+           ===================================================== */
+
+        .registration-info {
+            background: linear-gradient(
+                    180deg,
+                    #0878cf 0%,
+                    #0871c4 100%
+            );
+
+            color: white;
+
+            border-radius: 18px;
+
+            padding: 42px;
+
+            min-height: 560px;
+
+            box-shadow:
+                    0 8px 22px rgba(20, 50, 80, 0.10);
+        }
+
+        .registration-info h2 {
+            margin: 0 0 22px;
+
+            font-size: 34px;
+
+            color: white;
+
+            font-weight: 700;
+        }
+
+        .registration-info > p {
+            margin: 0;
+
+            font-size: 17px;
+
+            line-height: 1.8;
+
+            color: white;
+        }
+
+
+        /* Steps */
+
+        .registration-steps {
+            margin-top: 42px;
+        }
+
+        .registration-step {
+            display: flex;
+
+            gap: 18px;
+
+            margin-bottom: 30px;
+        }
+
+        .step-number {
+            flex-shrink: 0;
+
+            width: 56px;
+            height: 56px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border: 1px solid rgba(255,255,255,.65);
+
+            border-radius: 50%;
+
+            color: white;
+
+            font-size: 20px;
+
+            font-weight: 700;
+        }
+
+        .step-content h3 {
+            margin: 3px 0 7px;
+
+            color: white;
+
+            font-size: 18px;
+
+            font-weight: 700;
+        }
+
+        .step-content p {
+            margin: 0;
+
+            color: white;
+
+            font-size: 14px;
+
+            line-height: 1.7;
+        }
+
+
+        /* =====================================================
+           RIGHT FORM CARD
+           ===================================================== */
+
+        .user-form-card {
+            background: white;
+
+            border: 1px solid #dfe7f0;
+
+            border-radius: 18px;
+
+            padding: 42px 48px;
+
+            box-shadow:
+                    0 8px 22px rgba(20, 50, 80, 0.10);
+        }
+
+        .user-form-card h2 {
+            margin: 0;
+
+            color: #17365d;
+
+            font-size: 32px;
+
+            font-weight: 700;
+        }
+
+        .form-subtitle {
+            margin: 8px 0 32px;
+
+            color: #6b7a90;
+
+            font-size: 16px;
+        }
+
+
+        /* Error */
+
+        .form-error {
+            background: #fdf0f0;
+
+            color: #b4232d;
+
+            border: 1px solid #f2caca;
+
+            border-radius: 8px;
+
+            padding: 12px 15px;
+
+            margin-bottom: 22px;
+
+            font-size: 14px;
+        }
+
+
+        /* Form grid */
+
+        .user-form-grid {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            column-gap: 32px;
+
+            row-gap: 22px;
+        }
+
+        .user-form-group {
+            display: flex;
+
+            flex-direction: column;
+        }
+
+        .user-form-group label {
+            margin-bottom: 8px;
+
+            color: #26384f;
+
+            font-size: 14px;
+
+            font-weight: 600;
+        }
+
+        .user-form-group input,
+        .user-form-group select {
+            width: 100%;
+
+            height: 52px;
+
+            padding: 0 15px;
+
+            border: 1px solid #dfe7f0;
+
+            border-radius: 9px;
+
+            background: white;
+
+            color: #26384f;
+
+            font-family: inherit;
+
+            font-size: 15px;
+
+            outline: none;
+
+            transition: .2s;
+        }
+
+        .user-form-group input::placeholder {
+            color: #8492a6;
+        }
+
+        .user-form-group input:focus,
+        .user-form-group select:focus {
+            border-color: #005eb8;
+
+            box-shadow:
+                    0 0 0 3px rgba(0,94,184,.10);
+        }
+
+
+        /* Category */
+
+        .category-group {
+            display: none;
+        }
+
+
+        /* Enabled */
+
+        .enabled-group {
+            grid-column: 1 / -1;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            margin-top: 2px;
+        }
+
+        .enabled-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+
+            cursor: pointer;
+
+            accent-color: #005eb8;
+        }
+
+        .enabled-group label {
+            margin: 0;
+
+            color: #526274;
+
+            font-size: 15px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+        }
+
+
+        /* Buttons */
+
+        .user-form-actions {
+            grid-column: 1 / -1;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 14px;
+
+            margin-top: 5px;
+        }
+
+        .save-user-btn {
+            min-width: 180px;
+
+            height: 48px;
+
+            padding: 0 25px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #005eb8;
+
+            color: white;
+
+            font-size: 15px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: .2s;
+        }
+
+        .save-user-btn:hover {
+            background: #004b93;
+        }
+
+        .cancel-user-btn {
+            min-width: 120px;
+
+            height: 48px;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 0 22px;
+
+            border-radius: 8px;
+
+            background: #eef2f6;
+
+            color: #526274;
+
+            text-decoration: none;
+
+            font-size: 15px;
+
+            font-weight: 600;
+
+            transition: .2s;
+        }
+
+        .cancel-user-btn:hover {
+            background: #e2e8ef;
+
+            color: #26384f;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+           ===================================================== */
+
+        @media (max-width: 950px) {
+
+            .user-registration-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .registration-info {
+                min-height: auto;
+            }
+
+        }
+
+
+        @media (max-width: 650px) {
+
+            .add-user-wrapper {
+                width: 94%;
+            }
+
+            .add-user-heading h1 {
+                font-size: 30px;
+            }
+
+            .add-user-heading p {
+                font-size: 16px;
+            }
+
+            .user-form-card {
+                padding: 28px 24px;
+            }
+
+            .registration-info {
+                padding: 30px 25px;
+            }
+
+            .registration-info h2 {
+                font-size: 28px;
+            }
+
+            .user-form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .enabled-group,
+            .user-form-actions {
+                grid-column: auto;
+            }
+
+            .user-form-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .save-user-btn,
+            .cancel-user-btn {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<!-- HEADER -->
+<div th:replace="~{fragments/header :: header}"></div>
+
+<!-- NAVBAR -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+<!-- =========================================================
+     PAGE
+     ========================================================= -->
+
+<main class="add-user-page">
+
+    <div class="add-user-wrapper">
+
+
+        <!-- PAGE HEADING -->
+
+        <div class="add-user-heading">
+
+            <h1>Add User</h1>
+
+            <p>
+                Create and configure a new system user
+            </p>
+
+        </div>
+
+
+        <!-- TWO COLUMN SECTION -->
+
+        <div class="user-registration-layout">
+
+
+            <!-- =================================================
+                 LEFT PANEL
+                 ================================================= -->
+
+            <section class="registration-info">
+
+                <h2>User Registration</h2>
+
+                <p>
+                    Add a new user to the PATH Asset Management
+                    System and configure their access permissions.
+                </p>
+
+
+                <div class="registration-steps">
+
+
+                    <!-- STEP 1 -->
+
+                    <div class="registration-step">
+
+                        <div class="step-number">
+                            1
+                        </div>
+
+                        <div class="step-content">
+
+                            <h3>
+                                Account Details
+                            </h3>
+
+                            <p>
+                                Enter the username, email and
+                                password for the new account.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- STEP 2 -->
+
+                    <div class="registration-step">
+
+                        <div class="step-number">
+                            2
+                        </div>
+
+                        <div class="step-content">
+
+                            <h3>
+                                Select Role
+                            </h3>
+
+                            <p>
+                                Choose the role that determines
+                                the user's system access.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- STEP 3 -->
+
+                    <div class="registration-step">
+
+                        <div class="step-number">
+                            3
+                        </div>
+
+                        <div class="step-content">
+
+                            <h3>
+                                Asset Category
+                            </h3>
+
+                            <p>
+                                Select an asset category when
+                                creating a Category User.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 RIGHT FORM
+                 ================================================= -->
+
+            <section class="user-form-card">
+
+                <h2>
+                    User Information
+                </h2>
+
+                <p class="form-subtitle">
+                    Enter the details below to create a new system user.
+                </p>
+
+
+                <!-- ERROR -->
+
+                <div th:if="${error}"
+                     class="form-error">
+
+                    <span th:text="${error}"></span>
+
+                </div>
+
+
+                <!-- FORM -->
+
+                <form th:action="@{/users/save}"
+                      th:object="${user}"
+                      method="post">
+
+
+                    <div class="user-form-grid">
+
+
+                        <!-- USERNAME -->
+
+                        <div class="user-form-group">
+
+                            <label>
+                                Username
+                            </label>
+
+                            <input
+                                    type="text"
+                                    th:field="*{username}"
+                                    placeholder="Enter username"
+                                    required>
+
+                        </div>
+
+
+                        <!-- EMAIL -->
+
+                        <div class="user-form-group">
+
+                            <label>
+                                Email
+                            </label>
+
+                            <input
+                                    type="email"
+                                    th:field="*{email}"
+                                    placeholder="Enter email address"
+                                    required>
+
+                        </div>
+
+
+                        <!-- PASSWORD -->
+
+                        <div class="user-form-group">
+
+                            <label>
+                                Password
+                            </label>
+
+                            <input
+                                    type="password"
+                                    th:field="*{password}"
+                                    placeholder="Enter password"
+                                    required>
+
+                        </div>
+
+
+                        <!-- ROLE -->
+
+                        <div class="user-form-group">
+
+                            <label>
+                                Role
+                            </label>
+
+                            <select
+                                    th:field="*{role}"
+                                    id="role"
+                                    onchange="toggleCategory()"
+                                    required>
+
+                                <option value="">
+                                    -- Select Role --
+                                </option>
+
+                                <option value="ROLE_ADMIN">
+                                    Admin
+                                </option>
+
+                                <option value="ROLE_VIEWER">
+                                    Viewer
+                                </option>
+
+                                <option value="ROLE_CATEGORY_USER">
+                                    Category User
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- CATEGORY -->
+
+                        <div class="user-form-group category-group"
+                             id="categoryDiv">
+
+                            <label>
+                                Asset Category
+                            </label>
+
+                            <select
+                                    th:field="*{assetCategory}"
+                                    id="assetCategory">
+
+                                <option value="">
+                                    -- Select Asset Category --
+                                </option>
+
+                                <option value="Furniture & Fixture">
+                                    Furniture & Fixture
+                                </option>
+
+                                <option value="Office Equipment">
+                                    Office Equipment
+                                </option>
+
+                                <option value="Computer & Software">
+                                    Computer & Software
+                                </option>
+
+                                <option value="Vehicle">
+                                    Vehicle
+                                </option>
+
+                                <option value="Lease Hold Improvement">
+                                    Lease Hold Improvement
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- ENABLED -->
+
+                        <div class="enabled-group">
+
+                            <input
+                                    type="checkbox"
+                                    id="enabled"
+                                    th:field="*{enabled}">
+
+                            <label for="enabled">
+                                Enabled
+                            </label>
+
+                        </div>
+
+
+                        <!-- BUTTONS -->
+
+                        <div class="user-form-actions">
+
+                            <button
+                                    type="submit"
+                                    class="save-user-btn">
+
+                                Save User
+
+                            </button>
+
+
+                            <a
+                                    th:href="@{/users}"
+                                    class="cancel-user-btn">
+
+                                Cancel
+
+                            </a>
+
+                        </div>
+
+
+                    </div>
+
+                </form>
+
+            </section>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<!-- FOOTER -->
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+
+<script>
+
+    function toggleCategory() {
+
+        const role =
+            document.getElementById("role").value;
+
+        const categoryDiv =
+            document.getElementById("categoryDiv");
+
+        const category =
+            document.getElementById("assetCategory");
+
+
+        if (role === "ROLE_CATEGORY_USER") {
+
+            categoryDiv.style.display = "flex";
+
+            category.required = true;
+
+        } else {
+
+            categoryDiv.style.display = "none";
+
+            category.required = false;
+
+            category.value = "";
+
+        }
+
+    }
+
+</script>
+
+
+</body>
+
+</html>

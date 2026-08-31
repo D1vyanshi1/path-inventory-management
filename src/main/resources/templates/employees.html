@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <title>Employees | PATH Asset Management</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet"
+          th:href="@{/app.css}">
+
+    <style>
+
+        /* =====================================================
+           EMPLOYEES PAGE
+           ===================================================== */
+
+        .employees-page {
+            width: min(1450px, 94%);
+            margin: 0 auto;
+            padding: 32px 0 50px;
+        }
+
+
+        /* =====================================================
+           PAGE HEADER
+           ===================================================== */
+
+        .employees-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .employees-header h1 {
+            margin: 0;
+            color: #17365d;
+            font-size: 30px;
+            font-weight: 700;
+        }
+
+        .employees-header p {
+            margin: 7px 0 0;
+            color: #718096;
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+           ADD EMPLOYEE BUTTON
+           ===================================================== */
+
+        .employee-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-height: 42px;
+
+            padding: 0 18px;
+
+            border-radius: 8px;
+
+            background: #005eb8;
+            color: white;
+
+            text-decoration: none;
+
+            font-size: 13px;
+            font-weight: 600;
+
+            transition: 0.2s ease;
+        }
+
+        .employee-action:hover {
+            background: #004b93;
+            color: white;
+            text-decoration: none;
+            transform: translateY(-1px);
+        }
+
+
+        /* =====================================================
+           TABLE CARD
+           ===================================================== */
+
+        .employee-table-card {
+
+            background: #ffffff;
+
+            border: 1px solid #dfe7f0;
+
+            border-radius: 14px;
+
+            box-shadow:
+                    0 3px 12px rgba(20, 50, 80, 0.06);
+
+            overflow: hidden;
+        }
+
+        .employee-table-scroll {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+
+        /* =====================================================
+           TABLE
+           ===================================================== */
+
+        .employee-table {
+
+            width: 100%;
+
+            min-width: 1100px;
+
+            border-collapse: collapse;
+
+            background: white;
+        }
+
+
+        .employee-table th {
+
+            padding: 14px 13px;
+
+            background: #f5f8fc;
+
+            border-bottom: 1px solid #dfe7f0;
+
+            color: #17365d;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            text-align: center;
+
+            white-space: nowrap;
+        }
+
+
+        .employee-table th a {
+
+            color: #17365d;
+
+            text-decoration: none;
+        }
+
+
+        .employee-table th a:hover {
+
+            color: #005eb8;
+
+            text-decoration: none;
+        }
+
+
+        .employee-table td {
+
+            padding: 13px;
+
+            border-bottom: 1px solid #edf1f5;
+
+            color: #526274;
+
+            font-size: 13px;
+
+            text-align: center;
+
+            vertical-align: middle;
+
+            white-space: nowrap;
+        }
+
+
+        .employee-table tbody tr {
+
+            transition: background 0.15s ease;
+        }
+
+
+        .employee-table tbody tr:hover {
+
+            background: #f7fbff;
+        }
+
+
+        .employee-table tbody tr:last-child td {
+
+            border-bottom: none;
+        }
+
+
+        /* =====================================================
+           EMPLOYEE NAME
+           ===================================================== */
+
+        .employee-name {
+
+            color: #005eb8 !important;
+
+            font-weight: 600;
+
+            text-decoration: none;
+        }
+
+
+        .employee-name:hover {
+
+            color: #004b93 !important;
+
+            text-decoration: underline;
+        }
+
+
+        /* =====================================================
+           EMPLOYEE IMAGE
+           ===================================================== */
+
+        .employee-image {
+
+            width: 52px;
+
+            height: 52px;
+
+            object-fit: cover;
+
+            border-radius: 50%;
+
+            border: 2px solid #e2eaf2;
+
+            background: #f5f8fc;
+        }
+
+
+        .no-image {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            width: 52px;
+
+            height: 52px;
+
+            border-radius: 50%;
+
+            background: #f1f4f7;
+
+            color: #8795a5;
+
+            font-size: 10px;
+
+            font-weight: 600;
+        }
+
+
+        /* =====================================================
+           ACTIONS
+           ===================================================== */
+
+        .employee-actions {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 7px;
+        }
+
+
+        .employee-btn {
+
+            padding: 6px 10px;
+
+            border-radius: 6px;
+
+            font-size: 11px;
+
+            font-weight: 600;
+
+            text-decoration: none;
+
+            transition: 0.2s ease;
+        }
+
+
+        .employee-btn:hover {
+
+            text-decoration: none;
+
+            transform: translateY(-1px);
+        }
+
+
+        .edit-employee {
+
+            background: #eaf2ff;
+
+            color: #1557a6;
+        }
+
+
+        .edit-employee:hover {
+
+            background: #dceaff;
+
+            color: #1557a6;
+        }
+
+
+        .delete-employee {
+
+            background: #fdecec;
+
+            color: #b4232d;
+        }
+
+
+        .delete-employee:hover {
+
+            background: #f9dddd;
+
+            color: #b4232d;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+           ===================================================== */
+
+        @media (max-width: 800px) {
+
+            .employees-page {
+
+                width: 94%;
+
+                padding-top: 24px;
+            }
+
+
+            .employees-header {
+
+                flex-direction: column;
+
+                align-items: flex-start;
+            }
+
+
+            .employee-action {
+
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     HEADER
+     ===================================================== -->
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+
+<!-- =====================================================
+     NAVBAR
+     ===================================================== -->
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+<main class="employees-page">
+
+
+    <!-- =================================================
+         PAGE HEADER
+         ================================================= -->
+
+    <div class="employees-header">
+
+        <div>
+
+            <h1>
+                Employees
+            </h1>
+
+            <p>
+                Manage employees and their assigned assets
+            </p>
+
+        </div>
+
+
+        <a th:href="@{/employees/new}"
+           class="employee-action">
+
+            + Add Employee
+
+        </a>
+
+    </div>
+
+
+    <!-- =================================================
+         EMPLOYEE TABLE
+         ================================================= -->
+
+    <div class="employee-table-card">
+
+        <div class="employee-table-scroll">
+
+            <table class="employee-table">
+
+
+                <thead>
+
+                <tr>
+
+
+                    <th>
+
+                        <a th:href="@{/employees(sortBy='id',direction=${sortBy=='id' and direction=='asc' ? 'desc':'asc'})}">
+
+                            S.No.
+
+                        </a>
+
+                    </th>
+
+
+                    <th>
+
+                        <a th:href="@{/employees(sortBy='employeeId',direction=${sortBy=='employeeId' and direction=='asc' ? 'desc':'asc'})}">
+
+                            Employee ID
+
+                        </a>
+
+                    </th>
+
+
+                    <th>
+
+                        <a th:href="@{/employees(sortBy='employeeName',direction=${sortBy=='employeeName' and direction=='asc' ? 'desc':'asc'})}">
+
+                            Name
+
+                        </a>
+
+                    </th>
+
+
+                    <th>
+
+                        <a th:href="@{/employees(sortBy='email',direction=${sortBy=='email' and direction=='asc' ? 'desc':'asc'})}">
+
+                            Email
+
+                        </a>
+
+                    </th>
+
+
+                    <th>
+
+                        <a th:href="@{/employees(sortBy='department',direction=${sortBy=='department' and direction=='asc' ? 'desc':'asc'})}">
+
+                            Department
+
+                        </a>
+
+                    </th>
+
+
+                    <th>
+
+                        <a th:href="@{/employees(sortBy='designation',direction=${sortBy=='designation' and direction=='asc' ? 'desc':'asc'})}">
+
+                            Designation
+
+                        </a>
+
+                    </th>
+
+
+                    <th>
+
+                        <a th:href="@{/employees(sortBy='country',direction=${sortBy=='country' and direction=='asc' ? 'desc':'asc'})}">
+
+                            Country
+
+                        </a>
+
+                    </th>
+
+
+                    <th>
+
+                        <a th:href="@{/employees(sortBy='officeLocation',direction=${sortBy=='officeLocation' and direction=='asc' ? 'desc':'asc'})}">
+
+                            Office Location
+
+                        </a>
+
+                    </th>
+
+
+                    <th>
+                        Image
+                    </th>
+
+
+                    <th>
+                        Actions
+                    </th>
+
+
+                </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                <tr th:each="employee : ${employees}">
+
+
+                    <!-- ID -->
+
+                    <td th:text="${employee.id}">
+                    </td>
+
+
+                    <!-- EMPLOYEE ID -->
+
+                    <td th:text="${employee.employeeId}">
+                    </td>
+
+
+                    <!-- NAME -->
+
+                    <td>
+
+                        <a
+                                th:href="@{/employees/{id}/devices(id=${employee.id})}"
+
+                                th:text="${employee.employeeName}"
+
+                                class="employee-name">
+
+                        </a>
+
+                    </td>
+
+
+                    <!-- EMAIL -->
+
+                    <td th:text="${employee.email}">
+                    </td>
+
+
+                    <!-- DEPARTMENT -->
+
+                    <td th:text="${employee.department}">
+                    </td>
+
+
+                    <!-- DESIGNATION -->
+
+                    <td th:text="${employee.designation}">
+                    </td>
+
+
+                    <!-- COUNTRY -->
+
+                    <td th:text="${employee.country}">
+                    </td>
+
+
+                    <!-- OFFICE -->
+
+                    <td th:text="${employee.officeLocation}">
+                    </td>
+
+
+                    <!-- IMAGE -->
+
+                    <td>
+
+                        <img
+
+                                th:if="${employee.image != null and employee.image != ''}"
+
+                                th:src="@{'/uploads/employees/' + ${employee.image}}"
+
+                                alt="Employee Image"
+
+                                class="employee-image">
+
+
+                        <span
+
+                                th:if="${employee.image == null or employee.image == ''}"
+
+                                class="no-image">
+
+                            No Image
+
+                        </span>
+
+                    </td>
+
+
+                    <!-- ACTIONS -->
+
+                    <td>
+
+                        <div class="employee-actions">
+
+
+                            <a
+
+                                    th:href="@{/employees/edit/{id}(id=${employee.id})}"
+
+                                    class="employee-btn edit-employee">
+
+                                Edit
+
+                            </a>
+
+
+                            <a
+
+                                    th:href="@{/employees/delete/{id}(id=${employee.id})}"
+
+                                    class="employee-btn delete-employee"
+
+                                    onclick="return confirm('Delete this employee?')">
+
+                                Delete
+
+                            </a>
+
+
+                        </div>
+
+                    </td>
+
+
+                </tr>
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+</main>
+
+
+<!-- =====================================================
+     FOOTER
+     ===================================================== -->
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+
+</body>
+
+</html>

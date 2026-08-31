@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <title>Verify OTP</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <style>
+
+        /* ================= GENERAL ================= */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+            background: #f4f6f9;
+            color: #173d68;
+
+            min-height: 100vh;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        /* ================= HEADER ================= */
+
+        .app-header {
+            width: 100%;
+            height: 72px;
+
+            background: #ffffff;
+
+            border-bottom: 1px solid #e1e7ee;
+
+            display: flex;
+            align-items: center;
+
+            padding: 0 50px;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+
+            gap: 18px;
+        }
+
+        .path-logo {
+            width: 72px;
+            height: auto;
+
+            display: block;
+            object-fit: contain;
+        }
+
+        .header-title {
+            color: #163f70;
+
+            font-size: 28px;
+            font-weight: 700;
+
+            white-space: nowrap;
+        }
+
+
+        /* ================= MAIN ================= */
+
+        main {
+            flex: 1;
+
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+
+        /* ================= CONTAINER ================= */
+
+        .otp-container {
+
+            width: 100%;
+
+            max-width: 500px;
+
+            margin: 60px auto 50px;
+
+            padding: 0 20px;
+        }
+
+
+        /* ================= CARD ================= */
+
+        .form-card {
+
+            width: 100%;
+
+            background: #ffffff;
+
+            border: 1px solid #dfe6ee;
+
+            border-radius: 16px;
+
+            padding: 34px 40px;
+
+            box-shadow:
+                    0 6px 20px rgba(29, 53, 87, 0.10);
+        }
+
+
+        /* ================= TITLE ================= */
+
+        .form-card h2 {
+
+            margin: 0 0 8px;
+
+            text-align: center;
+
+            color: #1d426d;
+
+            font-size: 30px;
+
+            font-weight: 700;
+        }
+
+
+        .form-description {
+
+            margin: 0 0 28px;
+
+            text-align: center;
+
+            color: #71859b;
+
+            font-size: 15px;
+
+            line-height: 1.5;
+        }
+
+
+        /* ================= ERROR ================= */
+
+        .error {
+
+            background: #fff1f1;
+
+            border: 1px solid #f3cccc;
+
+            color: #c62828;
+
+            padding: 11px 13px;
+
+            border-radius: 8px;
+
+            margin-bottom: 18px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            text-align: center;
+        }
+
+
+        /* ================= FORM ================= */
+
+        .form-group {
+
+            margin-bottom: 20px;
+        }
+
+
+        label {
+
+            display: block;
+
+            margin-bottom: 7px;
+
+            color: #173d68;
+
+            font-size: 15px;
+
+            font-weight: 600;
+        }
+
+
+        input {
+
+            width: 100%;
+
+            height: 52px;
+
+            padding: 0 14px;
+
+            border: 1px solid #d7e1eb;
+
+            border-radius: 8px;
+
+            background: #ffffff;
+
+            color: #26384d;
+
+            font-size: 20px;
+
+            font-weight: 600;
+
+            text-align: center;
+
+            letter-spacing: 6px;
+
+            transition: 0.2s;
+        }
+
+
+        input::placeholder {
+
+            color: #9aaabd;
+
+            font-size: 15px;
+
+            font-weight: 400;
+
+            letter-spacing: normal;
+        }
+
+
+        input:focus {
+
+            outline: none;
+
+            border-color: #1976d2;
+
+            box-shadow:
+                    0 0 0 3px rgba(25, 118, 210, 0.10);
+        }
+
+
+        /* ================= BUTTON ================= */
+
+        .btn-primary {
+
+            width: 100%;
+
+            height: 48px;
+
+            margin-top: 3px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #1976d2;
+
+            color: #ffffff;
+
+            font-size: 16px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: 0.2s;
+        }
+
+
+        .btn-primary:hover {
+
+            background: #1565c0;
+        }
+
+
+        /* ================= BACK LINK ================= */
+
+        .back-link {
+
+            display: block;
+
+            margin-top: 18px;
+
+            text-align: center;
+
+            color: #1976d2;
+
+            text-decoration: none;
+
+            font-size: 15px;
+
+            font-weight: 600;
+        }
+
+
+        .back-link:hover {
+
+            text-decoration: underline;
+        }
+
+
+        /* ================= FOOTER ================= */
+
+        .app-footer {
+
+            width: 100%;
+
+            min-height: 64px;
+
+            background: #ffffff;
+
+            border-top: 1px solid #e1e7ee;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+        }
+
+
+        .footer-content {
+
+            color: #71859b;
+
+            font-size: 15px;
+        }
+
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 700px) {
+
+            .app-header {
+
+                padding: 0 20px;
+            }
+
+            .header-title {
+
+                font-size: 21px;
+            }
+
+            .path-logo {
+
+                width: 62px;
+            }
+
+            .otp-container {
+
+                margin-top: 35px;
+
+                padding: 0 15px;
+            }
+
+            .form-card {
+
+                padding: 30px 24px;
+            }
+
+            .form-card h2 {
+
+                font-size: 26px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ================= HEADER ================= -->
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+
+<!-- ================= MAIN ================= -->
+
+<main>
+
+    <div class="otp-container">
+
+        <div class="form-card">
+
+
+            <h2>
+                Verify OTP
+            </h2>
+
+
+            <p class="form-description">
+                Enter the verification code sent to your registered email.
+            </p>
+
+
+            <!-- ERROR -->
+
+            <div th:if="${error}"
+                 class="error"
+                 th:text="${error}">
+            </div>
+
+
+            <form th:action="@{/verify-otp}"
+                  method="post">
+
+
+                <!-- EMAIL -->
+
+                <input type="hidden"
+                       name="email"
+                       th:value="${email}">
+
+
+                <!-- OTP -->
+
+                <div class="form-group">
+
+                    <label>
+                        Enter OTP
+                    </label>
+
+                    <input
+                            type="text"
+                            name="otp"
+                            maxlength="6"
+                            inputmode="numeric"
+                            pattern="[0-9]{6}"
+                            placeholder="Enter 6-digit OTP"
+                            autocomplete="one-time-code"
+                            required>
+
+                </div>
+
+
+                <!-- BUTTON -->
+
+                <button
+                        type="submit"
+                        class="btn-primary">
+
+                    Verify OTP
+
+                </button>
+
+
+            </form>
+
+
+            <!-- BACK -->
+
+            <a th:href="@{/login}"
+               class="back-link">
+
+                ← Back to Login
+
+            </a>
+
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<!-- ================= FOOTER ================= -->
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+
+</body>
+
+</html>
